@@ -26,15 +26,35 @@ export const getMarks = state => state.marks;
 
 // Sagas
 function* handleCapturePhoto({ payload }) {
+  yield console.log('Handling photo capture...');
+
   try {
     const { path } = payload;
-    const stats = yield RNFS.stat(path);
-    console.log(stats);
-    yield RNFS.unlink(path); // Delete tmp file
-    // if (stats.isFile()) {
-    //   const contents = yield RNFS.readFile(path, 'base64');
-    //   console.log(contents);
-    // }
+
+    const opts = {
+      enableHighAccuracy: true, // use gps
+      timeout: 20000, // timeout for getting the location?
+      maximumAge: 1000, // location cache max age
+    };
+
+    // First get the current location
+    navigator.geolocation.getCurrentPosition((pos) => {
+      console.log(pos);
+      RNFS.stat(path).then((stats) => {
+        console.log(stats);
+
+        if (stats.isFile()) {
+          RNFS.readFile(path, 'base64').then((contents) => {
+            console.log(contents);
+
+            RNFS.unlink(path); // Delete tmp file
+          });
+        }
+      });
+    },
+    error => console.log(error),
+    opts,
+    );
   } catch (e) {
     console.error(e);
   }
