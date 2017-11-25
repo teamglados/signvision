@@ -119,8 +119,20 @@ e = model.evaluate(input_fn)
 print("No stop signs", e)
 import ipdb; ipdb.set_trace()
 
-# Save model
-feature_placeholders = {'images': tf.placeholder(tf.float32, shape=(None, 32, 32, 3), name='images')}
-serving_input_fn = tf.estimator.export.build_raw_serving_input_receiver_fn(feature_placeholders)
+feature_spec = {
+   'images': tf.placeholder(tf.float32, shape=(None, 32, 32, 3), name='images')
+}
 
-model.export_savedmodel("./", serving_input_fn)
+def serving_input_receiver_fn():
+  serialized_tf_example = tf.placeholder(dtype=tf.float32,
+                                         shape=(None, 32, 32, 3),
+                                         name='input')
+  receiver_tensors = {'input': serialized_tf_example}
+  features = tf.parse_example(serialized_tf_example, feature_spec)
+  return tf.estimator.export.ServingInputReceiver(features, receiver_tensors)
+
+# Save model
+# feature_placeholders = {'images': tf.placeholder(tf.float32, shape=(None, 32, 32, 3), name='images')}
+# serving_input_fn = tf.estimator.export.build_raw_serving_input_receiver_fn(feature_placeholders)
+
+model.export_savedmodel("./", serving_input_receiver_fn)
