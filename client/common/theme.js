@@ -1,10 +1,15 @@
-export const primaryColorLight = '#1B81A5';
-export const primaryColorLighter = '#22A2CF';
-export const primaryColorLightest = '#25B5E8';
-export const primaryColor = '#156480';
-export const primaryColorDark = '#074F67';
-export const primaryColorDarker = '#064053';
-export const primaryColorDarkest = '#043143';
+import Color from 'color';
+
+const primaryBase = '#369bff';
+
+export const primaryColor = primaryBase;
+export const primaryColorLight = Color(primaryBase).lighten(0.2).hsl().string();
+export const primaryColorLighter = Color(primaryBase).lighten(0.3).hsl().string();
+export const primaryColorLightest = Color(primaryBase).lighten(0.4).hsl().string();
+export const primaryColorDark = Color(primaryBase).darken(0.2).hsl().string();
+export const primaryColorDarker = Color(primaryBase).darken(0.3).hsl().string();
+export const primaryColorDarkest = Color(primaryBase).darken(0.4).hsl().string();
+
 
 const theme = {
   primaryColorLight,

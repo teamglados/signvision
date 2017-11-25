@@ -13,15 +13,14 @@ const Button = ({ children, onPress, disabled, ...rest }) => (
 const ButtonBase = styled.TouchableOpacity`
   flex-direction: row;
   width: 100%;
-  background-color: ${props =>
-    props.disabled
-      ? props.theme.primaryColorLight
-      : props.theme.primaryColorLightest};
   align-items: center;
-  justify-content: ${props => props.justify || 'center'};
   border-radius: 100px;
   padding-horizontal: 32px;
-  padding-vertical: 12px;
+  padding-vertical: ${props => props.lg ? 24 : 12};
+  justify-content: ${props => props.justify || 'center'};
+  background-color: ${props => props.disabled
+    ? props.theme.primaryColorLight
+    : props.theme.primaryColor};
 `;
 
 Button.propTypes = {
