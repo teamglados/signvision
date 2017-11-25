@@ -8,12 +8,12 @@ import Gutter from '../common/Gutter';
 import Text from '../common/Text';
 
 const propTypes = {
-  something: PropTypes.any,
+  navigation: PropTypes.object.isRequired,
 };
 
 class HomeScreen extends Component {
   goToEvaluation = () => {
-    this.props.navigation.navigate('Evaluation');
+    this.props.navigation.navigate('Evaluate');
   }
 
   goToMark = () => {
@@ -26,17 +26,17 @@ class HomeScreen extends Component {
         <Button onPress={this.goToMark} lg>
           <Icon name="map-signs" size={30} color="#ddd" />
           <Gutter />
-          <Text size='18'>
+          <Text size="18">
             Start marking signs
           </Text>
         </Button>
 
-        <Gutter vertical amount='24px' />
+        <Gutter vertical amount="24px" />
 
         <Button onPress={this.goToEvaluation} lg>
           <Icon name="eye" size={30} color="#ddd" />
           <Gutter />
-          <Text size='18'>
+          <Text size="18">
             Evaluate signs
           </Text>
         </Button>
