@@ -5,6 +5,7 @@ import styled from 'styled-components/native';
 import Camera from 'react-native-camera';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { NavigationActions } from 'react-navigation';
 
 import { capturePhoto } from './mark.ducks';
 import Button from '../common/Button';
@@ -12,6 +13,7 @@ import Text from '../common/Text';
 
 const propTypes = {
   capturePhoto: PropTypes.func.isRequired,
+  navigation: PropTypes.object.isRequired,
 };
 
 const PHOTO_INTERVAL = 4000;
@@ -22,6 +24,7 @@ class MarkScreen extends Component {
   }
 
   componentWillUnmount() {
+    console.log('[UNMOUNTING]');
     clearInterval(this.captureInterval);
   }
 
@@ -38,6 +41,18 @@ class MarkScreen extends Component {
     }
   }
 
+  finishMarking = () => {
+    /* NOTE: we need to reset all screens so that camera ('Mark') screen
+     * is unmounted --> clears photo capture interval
+     */
+    const resetAction = NavigationActions.reset({
+      index: 0,
+      actions: [NavigationActions.navigate({ routeName: 'Optimize' })],
+    });
+    this.props.navigation.dispatch(resetAction);
+    // this.props.navigation.navigate('Optimize');
+  }
+
   render() {
     return (
       <MarkScreenWrapper>
@@ -50,7 +65,7 @@ class MarkScreen extends Component {
           orientation="portrait"
           keepAwake
         >
-          <Button onPress={this.takePhoto} success>
+          <Button onPress={this.finishMarking} success>
             <Text>
               Finish marking
             </Text>
