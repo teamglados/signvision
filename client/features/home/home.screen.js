@@ -19,6 +19,10 @@ class HomeScreen extends Component {
     this.props.navigation.navigate('Mark');
   }
 
+  goToMap = () => {
+    this.props.navigation.navigate('Optimize');
+  }
+
   render() {
     return (
       <HomeScreenWrapper>
@@ -30,6 +34,11 @@ class HomeScreen extends Component {
         <Button onPress={this.goToEvaluation}>
           <Icon name="cube" size={30} color="#ddd" />
           <Text>Evaluate</Text>
+        </Button>
+
+        <Button onPress={this.goToMap}>
+          <Icon name="map" size={30} color="#ddd" />
+          <Text>Map</Text>
         </Button>
       </HomeScreenWrapper>
     );
