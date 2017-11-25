@@ -4,6 +4,10 @@ const koaRouter = require('koa-router');
 const app = new koa();
 const router = koaRouter();
 
+router.get('/', async ctx => {
+  ctx.body = 'Hello';
+});
+
 router.get('/healthcheck', async ctx => {
   ctx.body = 'OK';
 });
