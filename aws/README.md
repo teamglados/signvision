@@ -1,10 +1,10 @@
 # AWS
 
-Ensure you have Terraform `0.11.0` installed:
+Ensure that you have Terraform `0.11.0` installed:
 
 ```
 brew install terraform
-brew install terraform
+brew upgrade terraform
 ```
 
 Setup environment:
