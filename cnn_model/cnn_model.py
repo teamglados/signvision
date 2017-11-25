@@ -6,7 +6,10 @@ from utils import read_data
 from sklearn.model_selection import train_test_split
 
 data = read_data()
-X_train, X_test, y_train, y_test = train_test_split(data["x"], data["y"], test_size=0.33, random_state=42)
+X_train = data["x"]
+y_train = data["y"]
+
+# , X_test, y_train, y_test = train_test_split(data["x"], data["y"], test_size=0.33, random_state=42)
 
 # Training Parameters
 learning_rate = 0.001
@@ -19,6 +22,7 @@ num_classes = 2 # Only stop sign
 def conv_net(features, reuse, n_classes, is_training):
     # Define a scope for reusing the variables
     with tf.variable_scope('ConvNet', reuse=reuse):
+        x = tf.placeholder(tf.float32, shape=(None, 32, 32, 3))
         x = features['images']
 
         # Layer 1: Convolutional. Input = 32x32x3. Output = 28x28x32.
@@ -80,7 +84,7 @@ model.train(input_fn, steps=num_steps)
 # Evaluate the Model
 # Define the input function for evaluating
 input_fn = tf.estimator.inputs.numpy_input_fn(
-    x={'images': X_test}, y=y_test,
+    x={'images': X_train}, y=y_train,
     batch_size=batch_size, shuffle=False)
 # Use the Estimator 'evaluate' method
 e = model.evaluate(input_fn)
@@ -96,10 +100,27 @@ input_fn = tf.estimator.inputs.numpy_input_fn(
     batch_size=batch_size, shuffle=False)
 # Use the Estimator 'evaluate' method
 e = model.evaluate(input_fn)
-print(e)
+print("Stop signs", e)
 # Validate model
-input_fn = tf.estimator.inputs.numpy_input_fn(x={'images': X_val}, num_epochs=1, shuffle=False)
-v = list(model.predict(input_fn))
-print(v)
+# input_fn = tf.estimator.inputs.numpy_input_fn(x={'images': X_val}, num_epochs=1, shuffle=False)
+# v = list(model.predict(input_fn))
+# print("Predicted stop signs", v)
+# print("Testing Accuracy:", e['accuracy'])
 
-print("Testing Accuracy:", e['accuracy'])
+validation_data = read_data(path='validation_false/', true_label="asd")
+X_val = validation_data['x']
+y_val = validation_data['y']
+
+input_fn = tf.estimator.inputs.numpy_input_fn(
+    x={'images': X_val}, y=y_val,
+    batch_size=batch_size, shuffle=False)
+# Use the Estimator 'evaluate' method
+e = model.evaluate(input_fn)
+print("No stop signs", e)
+import ipdb; ipdb.set_trace()
+
+# Save model
+feature_placeholders = {'images': tf.placeholder(tf.float32, shape=(None, 32, 32, 3), name='images')}
+serving_input_fn = tf.estimator.export.build_raw_serving_input_receiver_fn(feature_placeholders)
+
+model.export_savedmodel("./", serving_input_fn)
