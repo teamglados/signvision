@@ -13,7 +13,6 @@ export default () => {
 
     // Subscribe to messages
     messages.subscribe(evt => {
-      console.log('got event', evt);
       store.dispatch({...evt, server: true});
     });
 
