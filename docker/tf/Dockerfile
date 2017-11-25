@@ -3,9 +3,7 @@ FROM nvidia/cuda:8.0-cudnn5-devel-ubuntu14.04
 ARG TENSORFLOW_VERSION=0.12.1
 ARG TENSORFLOW_ARCH=gpu
 
-RUN echo -e "nvidia driver version:" && \
-		cat /proc/driver/nvidia/version && \
-		echo -e "cuda version" && \
+RUN echo -e "cuda version" && \
 		nvcc -V
 
 # Install some dependencies
