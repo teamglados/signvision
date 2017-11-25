@@ -13,9 +13,13 @@ def read_data(path='GTSRB/Final_Training/Images/*/', shape=(32, 32), true_label=
             label = 1
         else:
             label = 0
-        for filename in glob(folder + '*.ppm') + glob(folder + '*.jpg') + glob(folder + '*.png') + glob(folder + '*.bmp'):
+        for i, filename in enumerate(glob(folder + '*.ppm') + glob(folder + '*.jpg') + glob(folder + '*.png') + glob(folder + '*.bmp')):
             if true_label is None:
                 print(filename)
+
+            if label is not 1 and i > 15:
+                break
+
             im = Image.open(filename)
             im = im.convert(format)
             im = im.resize(shape, Image.LANCZOS)
