@@ -3,15 +3,18 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components/native';
 import Mapbox from '@mapbox/react-native-mapbox-gl';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { lineString as makeLineString } from '@turf/helpers';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { MAP_BOX_TOKEN, MAP_BOX_API } from '../../config';
 
 import { getMarks } from '../mark/mark.ducks';
+import { primaryColorLight } from '../../common/theme';
 
 const propTypes = {
   marks: PropTypes.array.isRequired,
+  navigation: PropTypes.object.isRequired,
 };
 
 class OptimizeScreen extends Component {
@@ -55,6 +58,10 @@ class OptimizeScreen extends Component {
       });
   }
 
+  goHome = () => {
+    this.props.navigation.navigate('Home');
+  }
+
   render() {
     const { route } = this.state;
     const { marks } = this.props;
@@ -64,10 +71,14 @@ class OptimizeScreen extends Component {
       <OptimizeScreenWrapper>
         <Mapbox.MapView
           styleURL={Mapbox.StyleURL.Dark}
-          zoomLevel={9}
+          zoomLevel={12}
           centerCoordinate={center}
           style={styles.map}
         >
+          <ToHome onPress={this.goHome}>
+            <Icon name="arrow-left" size={32} color="#fff" />
+          </ToHome>
+
           {marks.map(mark =>
             <Mapbox.PointAnnotation
               key={`${mark.id}_${mark.geo.lat}`}
@@ -110,9 +121,21 @@ const DotFill = styled.View`
   height: 30px;
   align-items: center;
   justify-content: center;
-  background-color: ${props => props.theme.primaryColorLight};
+  background-color: ${props => props.theme.primaryColor};
   border-radius: 15;
   transform: scale(0.6);
+`;
+
+const ToHome = styled.TouchableOpacity`
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  background-color: ${props => props.theme.primaryColor};
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  align-items: center;
+  justify-content: center;
 `;
 
 const styles = StyleSheet.create({
@@ -123,9 +146,9 @@ const styles = StyleSheet.create({
 
 const mstyles = Mapbox.StyleSheet.create({
   route: {
-    lineColor: 'white',
+    lineColor: primaryColorLight,
     lineWidth: 3,
-    lineOpacity: 0.84,
+    lineOpacity: 0.85,
   },
 });
 
