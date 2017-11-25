@@ -1,2 +1,13 @@
-GTSRB/*
+# Training data / validation stuff
+GTSRB/
+temp/
+validation/
+
+# OSX shit
 .DS_Store
+
+# Python
+*.pyc
+
+
+
