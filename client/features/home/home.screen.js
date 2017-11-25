@@ -11,16 +11,25 @@ const propTypes = {
 };
 
 class HomeScreen extends Component {
-  state = {
+  goToEvaluation = () => {
+    this.props.navigation.navigate('Evaluation');
+  }
 
+  goToMark = () => {
+    this.props.navigation.navigate('Mark');
   }
 
   render() {
     return (
       <HomeScreenWrapper>
-        <Button>
-          <Icon name="rocket" size={30} color="#900" />
-          <Text>Home</Text>
+        <Button onPress={this.goToMark}>
+          <Icon name="rocket" size={30} color="#ddd" />
+          <Text>Mark</Text>
+        </Button>
+
+        <Button onPress={this.goToEvaluation}>
+          <Icon name="cube" size={30} color="#ddd" />
+          <Text>Evaluate</Text>
         </Button>
       </HomeScreenWrapper>
     );
