@@ -7,13 +7,12 @@ const { connections, messages, errors, options } = server;
 
 // Subscribe to new connections
 connections.subscribe(([ws, chan]) => {
-  console.log(`* new connection channel ${chan} ${ws._socket.remoteAddress}`);
+  console.log(`* [chan:${chan}] new connection ${ws._socket.remoteAddress}`);
 });
 
 // Subscribe to messages
 messages.subscribe(([evt, chan]) => {
-  console.log(`* new event on channel ${chan}`, evt);
-  sendEvent(chan, 'event_server', 'foo');
+  console.log(`* [chan:${chan}] new event '${evt.type}' len=${JSON.stringify(evt).length}`);
 });
 
 // TODO: Event handlers
