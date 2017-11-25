@@ -10,6 +10,12 @@ const Button = ({ children, onPress, disabled, ...rest }) => (
   </ButtonBase>
 );
 
+const getBg = props => {
+  if (props.disabled) return props.theme.primaryColorLight;
+  if (props.success) return props.theme.successColor;
+  return props.theme.primaryColor;
+}
+
 const ButtonBase = styled.TouchableOpacity`
   flex-direction: row;
   width: 100%;
@@ -18,9 +24,7 @@ const ButtonBase = styled.TouchableOpacity`
   padding-horizontal: 32px;
   padding-vertical: ${props => props.lg ? 24 : 12};
   justify-content: ${props => props.justify || 'center'};
-  background-color: ${props => props.disabled
-    ? props.theme.primaryColorLight
-    : props.theme.primaryColor};
+  background-color: ${props => getBg(props)};
 `;
 
 Button.propTypes = {

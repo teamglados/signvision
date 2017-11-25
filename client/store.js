@@ -1,6 +1,15 @@
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
 import createSagaMiddleware from 'redux-saga';
-import rootReducer, { rootSaga } from './root.ducks';
+import { fork } from 'redux-saga/effects';
+import markReducer, { markSagas } from './features/mark/mark.ducks';
+
+const rootReducer = combineReducers({
+  mark: markReducer,
+});
+
+function* rootSaga() {
+  yield fork(markSagas);
+}
 
 // create the saga middleware
 const sagaMiddleware = createSagaMiddleware();
