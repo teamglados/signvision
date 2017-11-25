@@ -6,6 +6,7 @@ import Mapbox from '@mapbox/react-native-mapbox-gl';
 import { lineString as makeLineString } from '@turf/helpers';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { MAP_BOX_TOKEN, MAP_BOX_API } from '../../config';
 
 import { getMarks } from '../mark/mark.ducks';
 
@@ -14,17 +15,50 @@ const propTypes = {
 };
 
 class OptimizeScreen extends Component {
+  state = {
+    route: null,
+  }
+
+  componentWillMount() {
+    this.getDirections();
+  }
+
   getCenterCoord = () => {
     const { marks } = this.props;
     if (!marks.length) return [11.256, 43.770];
     return [marks[0].geo.long, marks[0].geo.lat];
   }
 
+  getDirections = () => {
+    const { marks } = this.props;
+
+    // Build query
+    const coords = marks.reduce((acc, m) => {
+      const lo = `${m.geo.long}`.substring(0, 6);
+      const la = `${m.geo.lat}`.substring(0, 6);
+      acc += `${lo},${la};`;
+      return acc;
+    }, '');
+
+    // Remove last ";" character
+    const c = coords.slice(0, -1);
+    const p = '&geometries=geojson';
+
+    fetch(`${MAP_BOX_API}/walking/${c}.json?access_token=${MAP_BOX_TOKEN}${p}`)
+      .then(res => res.json())
+      .then(({ routes }) => {
+        if (!routes) return;
+
+        this.setState({
+          route: makeLineString(routes[0].geometry.coordinates),
+        });
+      });
+  }
+
   render() {
+    const { route } = this.state;
     const { marks } = this.props;
     const center = this.getCenterCoord();
-    const coords = marks.map(m => [m.geo.long, m.geo.lat]);
-    const lineString = makeLineString(coords);
 
     return (
       <OptimizeScreenWrapper>
@@ -47,12 +81,11 @@ class OptimizeScreen extends Component {
             </Mapbox.PointAnnotation>
           )}
 
-          <Mapbox.Animated.ShapeSource id="routeSource" shape={lineString}>
-            <Mapbox.Animated.LineLayer
-              id="routeFill"
-              style={mstyles.route}
-            />
-          </Mapbox.Animated.ShapeSource>
+          {route &&
+            <Mapbox.ShapeSource id="routeSource" shape={route}>
+              <Mapbox.LineLayer id="routeFill" style={mstyles.route} />
+            </Mapbox.ShapeSource>
+          }
         </Mapbox.MapView>
       </OptimizeScreenWrapper>
     );

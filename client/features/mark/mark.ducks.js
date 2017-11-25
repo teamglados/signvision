@@ -56,8 +56,8 @@ function* handleCapturePhoto({ payload }) {
     const mark = {
       id: pos.timestamp,
       geo: {
-        lat: pos.coords.latitude + (randBetween(1, 50) * 0.001),
-        long: pos.coords.longitude + (randBetween(1, 50) * 0.001),
+        lat: pos.coords.latitude + (randBetween(1, 10) * 0.0001),
+        long: pos.coords.longitude - (randBetween(1, 50) * 0.001),
       },
     };
 
