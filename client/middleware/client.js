@@ -90,7 +90,7 @@ export const createClient = host => {
 
   // OK
   client.send = data => {
-    if (client.socket) {
+    if (client.socket && client.channel) {
       client.socket.send(JSON.stringify({
         ...createPayload(data),
         chan: client.channel,
