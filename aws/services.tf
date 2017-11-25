@@ -12,6 +12,7 @@ resource "aws_elb" "test-http" {
     instance_protocol = "http"
     instance_port = 3000
   }
+  
   health_check {
     healthy_threshold = 3
     unhealthy_threshold = 2
@@ -31,7 +32,7 @@ resource "aws_ecs_service" "test-http" {
   cluster = "${aws_ecs_cluster.main.id}"
   task_definition = "${aws_ecs_task_definition.test-http.family}:${aws_ecs_task_definition.test-http.revision}"
   iam_role = "${aws_iam_role.ecs_service_role.arn}"
-  desired_count = 2
+  desired_count = 1
   depends_on = ["aws_iam_role_policy.ecs_service_role_policy"]
 
   load_balancer {
