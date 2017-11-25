@@ -13,17 +13,6 @@ resource "aws_ecs_cluster" "main" {
   name = "${var.ecs_cluster_name}"
 }
 
-resource "aws_autoscaling_group" "ecs-cluster" {
-  availability_zones = ["${var.availability_zone}"]
-  name = "ECS ${var.ecs_cluster_name}"
-  min_size = "${var.autoscale_min}"
-  max_size = "${var.autoscale_max}"
-  desired_capacity = "${var.autoscale_desired}"
-  health_check_type = "EC2"
-  launch_configuration = "${aws_launch_configuration.ecs.name}"
-  vpc_zone_identifier = ["${aws_subnet.main.id}"]
-}
-
 resource "aws_launch_configuration" "ecs" {
   name = "ECS ${var.ecs_cluster_name}"
   iam_instance_profile = "${aws_iam_instance_profile.ecs.name}"
@@ -35,30 +24,18 @@ resource "aws_launch_configuration" "ecs" {
   associate_public_ip_address = true
 }
 
-resource "aws_iam_role" "ecs_host_role" {
-  name = "ecs_host_role"
-  assume_role_policy = "${file("policies/ecs-role.json")}"
+resource "aws_autoscaling_group" "ecs" {
+  name = "ECS ${var.ecs_cluster_name}"
+  availability_zones = ["${var.availability_zone}"]
+  min_size = 1
+  max_size = 1
+  desired_capacity = 1
+  health_check_type = "EC2"
+  launch_configuration = "${aws_launch_configuration.ecs.name}"
+  vpc_zone_identifier = ["${aws_subnet.main.id}"]
 }
 
-resource "aws_iam_role_policy" "ecs_instance_role_policy" {
-  name = "ecs_instance_role_policy"
-  policy = "${file("policies/ecs-instance-role-policy.json")}"
-  role = "${aws_iam_role.ecs_host_role.id}"
-}
-
-resource "aws_iam_role" "ecs_service_role" {
-  name = "ecs_service_role"
-  assume_role_policy = "${file("policies/ecs-role.json")}"
-}
-
-resource "aws_iam_role_policy" "ecs_service_role_policy" {
-  name = "ecs_service_role_policy"
-  policy = "${file("policies/ecs-service-role-policy.json")}"
-  role = "${aws_iam_role.ecs_service_role.id}"
-}
-
-resource "aws_iam_instance_profile" "ecs" {
-  name = "ecs-instance-profile"
-  path = "/"
-  role = "${aws_iam_role.ecs_host_role.name}"
+resource "aws_ecs_task_definition" "glados-server" {
+  family = "glados-server"
+  container_definitions = "${file("task-definitions/glados-server.json")}"
 }

@@ -1,10 +1,10 @@
 FROM glados:tf
 
-# ENV: node version, npm version
+# Setup env
 ENV NODE_VERSION=8.6.0 NPM_VERSION=5
 ENV RM_DIRS=/usr/include
 
-# INSTALL: NodeJS and NPM
+# Install node & npm
 RUN echo "Collecting dependencies..." && \
   apt-get update -y && \
   apt-get install build-essential && \
@@ -66,10 +66,11 @@ COPY ./pkg.tar.gz /opt/pkg.tar.gz
 RUN tar -zxvf /opt/pkg.tar.gz && \
     cd /opt/server && \
     npm i && \
-    chmod a+x /opt/*
+    chmod a+x /opt/* && \
+    mkdir /opt/public
 
-# Expose port
-EXPOSE 3000
+# Expose ports
+EXPOSE 3000-8080
 
 # Entrypoint
 ENTRYPOINT ["/opt/entry.sh"]

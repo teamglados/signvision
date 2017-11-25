@@ -14,7 +14,7 @@ variable "availability_zone" {
 
 variable "ecs_cluster_name" {
   description = "Name of the Amazon ECS cluster"
-  default = "test"
+  default = "glados"
 }
 
 variable "amis" {
