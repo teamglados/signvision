@@ -1,20 +1,25 @@
 [
   {
-    "name": "test-http",
-    "image": "nardeas/test-http-server",
+    "name": "glados-server",
+    "image": "nardeas/glados:server",
     "cpu": 512,
     "memory": 512,
-    "links": [],
     "portMappings": [
       {
         "containerPort": 3000,
         "hostPort": 3000,
         "protocol": "tcp"
+      },
+      {
+        "containerPort": 8000,
+        "hostPort": 8000,
+        "protocol": "tcp"
       }
     ],
     "essential": true,
-    "entryPoint": [],
+    "links": [],
     "command": [],
+    "entryPoint": [],
     "environment": [],
     "mountPoints": [],
     "volumesFrom": []
