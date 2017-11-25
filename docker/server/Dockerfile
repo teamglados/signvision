@@ -5,10 +5,9 @@ ENV NODE_VERSION=8.6.0 NPM_VERSION=5
 ENV RM_DIRS=/usr/include
 
 # INSTALL: NodeJS and NPM
-RUN source /helpers && \
-  echo "Collecting dependencies..." && \
-  \
-  apk add --no-cache make gcc g++ python linux-headers binutils-gold libstdc++ && \
+RUN echo "Collecting dependencies..." && \
+  apt-get update -y && \
+  apt-get install build-essential && \
   gpg --keyserver ha.pool.sks-keyservers.net --recv-keys \
     94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
     FD3A5288F042B6850C66B31F09FE44734EB7990E \
@@ -50,9 +49,10 @@ RUN source /helpers && \
   \
   echo "Cleaning up..." && \
   \
-  apk del make gcc g++ python linux-headers binutils-gold && \
-  rm -rf ${RM_DIRS} /node-v${NODE_VERSION}* /usr/share/man /tmp/* /var/cache/apk/* \
+  rm -rf ${RM_DIRS} /node-v${NODE_VERSION}* /usr/share/man /tmp/* \
     /root/.npm /root/.node-gyp /root/.gnupg /usr/lib/node_modules/npm/man \
     /usr/lib/node_modules/npm/doc /usr/lib/node_modules/npm/html /usr/lib/node_modules/npm/scripts && \
-  echo "Version info - node=$(node -v), npm=$(npm -v)" && \
-  echo "Done"
+  echo "Version info - node=$(node -v), npm=$(npm -v)"
+
+# Install extra dependencies
+RUN pip install opencv-python
