@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { NavigationActions } from 'react-navigation';
 import Modal from 'react-native-modal';
 
-import { getMarks, addComment } from '../mark/mark.ducks';
+import { getMarks, getMarksById, addComment } from '../mark/mark.ducks';
 import Card from './Card';
 import CommentForm from './CommentForm';
 import { primaryColor } from '../../common/theme';
@@ -20,6 +20,7 @@ const propTypes = {
   marks: PropTypes.array.isRequired,
   navigation: PropTypes.object.isRequired,
   addComment: PropTypes.func.isRequired,
+  marksByid: PropTypes.object.isRequired,
 };
 
 class EvaluateScreen extends Component {
@@ -76,8 +77,8 @@ class EvaluateScreen extends Component {
   hideModal = () => this.setState({ isModalVisible: false })
 
   render() {
-    const { marks } = this.props;
-    const { swipes } = this.state;
+    const { marks, marksByid } = this.props;
+    const { swipes, isModalVisible, commentedItem } = this.state;
 
     return (
       <EvaluateScreenWrapper>
@@ -109,7 +110,7 @@ class EvaluateScreen extends Component {
           onSwipeLeft={this.handleSwipe}
           renderItem={item =>
             <Card
-              item={item}
+              item={marksByid[item.id]}
               onOk={this.handleOk}
               onDecline={this.handleDecline}
               onAddComment={() => this.handleCommentActivation(item)}
@@ -120,9 +121,15 @@ class EvaluateScreen extends Component {
         <Modal
           avoidKeyboard
           onBackdropPress={this.hideModal}
-          isVisible={this.state.isModalVisible}
+          isVisible={isModalVisible}
         >
-          <CommentForm onComment={this.addComment} />
+          <CommentForm
+            onComment={this.addComment}
+            initialComment={commentedItem
+              ? marksByid[commentedItem.id].comment
+              : ''
+            }
+          />
         </Modal>
       </EvaluateScreenWrapper>
     );
@@ -152,6 +159,7 @@ EvaluateScreen.propTypes = propTypes;
 
 const mapStateToProps = state => ({
   marks: getMarks(state),
+  marksByid: getMarksById(state),
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

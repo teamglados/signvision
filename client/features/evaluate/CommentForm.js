@@ -7,11 +7,15 @@ import Text from '../common/Text';
 
 const propTypes = {
   onComment: PropTypes.func.isRequired,
+  initialComment: PropTypes.string,
 };
 
 class CommentForm extends Component {
-  state = {
-    comment: '',
+  constructor(props) {
+    super(props);
+    this.state = {
+      comment: props.initialComment || '',
+    };
   }
 
   handleChange = comment => {

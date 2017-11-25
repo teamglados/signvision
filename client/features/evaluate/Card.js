@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -26,10 +26,9 @@ const propTypes = {
 
 const { width: windowWidth } = Dimensions.get('window');
 
-class Card extends PureComponent {
+class Card extends Component {
   render() {
     const { item, onOk, onDecline, onAddComment } = this.props;
-    console.log('[I]', item);
 
     return (
       <CardWrapper>
@@ -70,7 +69,10 @@ class Card extends PureComponent {
           {item.comment ?
             <UpdateComment onPress={onAddComment}>
               <Text numberOfLines={1} ellipsizeMode="tail" color={primaryColor}>
-                {`${item.comment.substring(0, 30)}...`}
+                {item.comment.length > 30
+                  ? `${item.comment.substring(0, 30)}...`
+                  : item.comment
+                }
               </Text>
               <Gutter amount="8px" />
               <Icon name="pencil-square-o" size={18} color={primaryColor} />

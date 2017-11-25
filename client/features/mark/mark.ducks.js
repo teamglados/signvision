@@ -35,6 +35,7 @@ export const addComment = createAction(MARK.ADD_COMMENT);
 
 // Selectors
 export const getMarks = ({ mark }) => Object.values(mark.marks);
+export const getMarksById = ({ mark }) => mark.marks;
 
 const getPosition = () => {
   const opts = {
