@@ -3,6 +3,8 @@ import createSagaMiddleware from 'redux-saga';
 import { fork } from 'redux-saga/effects';
 import markReducer, { markSagas } from './features/mark/mark.ducks';
 
+import createWsMiddleware from './middleware';
+
 const rootReducer = combineReducers({
   mark: markReducer,
 });
@@ -13,7 +15,8 @@ function* rootSaga() {
 
 // create the saga middleware
 const sagaMiddleware = createSagaMiddleware();
-const enhancer = applyMiddleware(sagaMiddleware);
+const wsMiddleware = createWsMiddleware();
+const enhancer = applyMiddleware(sagaMiddleware, wsMiddleware);
 
 export default function configureStore(initialState) {
   const store = createStore(rootReducer, initialState, enhancer);
