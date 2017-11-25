@@ -1,7 +1,7 @@
 [
   {
-    "name": "test-http",
-    "image": "nardeas/test-http-server",
+    "name": "glados-server",
+    "image": "nardeas/glados:server",
     "cpu": 512,
     "memory": 512,
     "links": [],
