@@ -16,7 +16,7 @@ const propTypes = {
   navigation: PropTypes.object.isRequired,
 };
 
-const PHOTO_INTERVAL = 4000;
+const PHOTO_INTERVAL = 2000;
 
 class MarkScreen extends Component {
   componentDidMount() {

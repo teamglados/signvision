@@ -22,6 +22,10 @@ class OptimizeScreen extends Component {
   render() {
     const { marks } = this.props;
     const center = this.getCenterCoord();
+    const route = {
+      type: 'LineString',
+      coordinates: marks.map(m => [m.geo.long, m.geo.lat]),
+    };
 
     return (
       <OptimizeScreenWrapper>
@@ -31,6 +35,13 @@ class OptimizeScreen extends Component {
           centerCoordinate={center}
           style={styles.map}
         >
+          {/* <Mapbox.ShapeSource id="routeSource" shape={route}>
+            <Mapbox.LineLayer
+              id="routeFill"
+              style={mstyles.route}
+              belowLayerID="originInnerCircle"
+            />
+          </Mapbox.ShapeSource> */}
           {marks.map((mark, i) =>
             <Mapbox.PointAnnotation
               key={`${mark.id}_${mark.geo.lat}`}
@@ -75,6 +86,14 @@ const DotFill = styled.View`
 const styles = StyleSheet.create({
   map: {
     flex: 1,
+  },
+});
+
+const mstyles = Mapbox.StyleSheet.create({
+  route: {
+    lineColor: 'white',
+    lineWidth: 3,
+    lineOpacity: 0.84,
   },
 });
 
