@@ -20,6 +20,10 @@ class HomeScreen extends Component {
     this.props.navigation.navigate('Mark');
   }
 
+  goToOptimize = () => {
+    this.props.navigation.navigate('Optimize');
+  }
+
   render() {
     return (
       <HomeScreenWrapper>
@@ -33,13 +37,23 @@ class HomeScreen extends Component {
 
         <Gutter vertical amount="24px" />
 
-        <Button onPress={this.goToEvaluation} lg>
+        <Button onPress={this.goToOptimize} lg>
+          <Icon name="map-marker" size={30} color="#ddd" />
+          <Gutter />
+          <Text size="18">
+            Optimized repair route
+          </Text>
+        </Button>
+
+        {/* <Gutter vertical amount="24px" />
+
+        <Button onPress={this.goToOptimize} lg>
           <Icon name="eye" size={30} color="#ddd" />
           <Gutter />
           <Text size="18">
             Evaluate signs
           </Text>
-        </Button>
+        </Button> */}
       </HomeScreenWrapper>
     );
   }

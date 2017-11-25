@@ -14,15 +14,15 @@ const getBg = props => {
   if (props.disabled) return props.theme.primaryColorLight;
   if (props.success) return props.theme.successColor;
   return props.theme.primaryColor;
-}
+};
 
 const ButtonBase = styled.TouchableOpacity`
   flex-direction: row;
-  width: 100%;
+  width: ${props => props.w || '100%'};
   align-items: center;
   border-radius: 100px;
-  padding-horizontal: 32px;
-  padding-vertical: ${props => props.lg ? 24 : 12};
+  padding-horizontal: ${props => props.sm ? 16 : 32};
+  padding-vertical: ${props => props.lg ? 24 : (props.sm ? 8 : 12)};
   justify-content: ${props => props.justify || 'center'};
   background-color: ${props => getBg(props)};
 `;

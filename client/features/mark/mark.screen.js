@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { NavigationActions } from 'react-navigation';
 
-import { capturePhoto } from './mark.ducks';
+import { capturePhoto, getMarks } from './mark.ducks';
 import Button from '../common/Button';
 import Text from '../common/Text';
 
@@ -24,7 +24,6 @@ class MarkScreen extends Component {
   }
 
   componentWillUnmount() {
-    console.log('[UNMOUNTING]');
     clearInterval(this.captureInterval);
   }
 
@@ -47,7 +46,7 @@ class MarkScreen extends Component {
      */
     const resetAction = NavigationActions.reset({
       index: 0,
-      actions: [NavigationActions.navigate({ routeName: 'Optimize' })],
+      actions: [NavigationActions.navigate({ routeName: 'Evaluate' })],
     });
     this.props.navigation.dispatch(resetAction);
     // this.props.navigation.navigate('Optimize');
@@ -65,8 +64,8 @@ class MarkScreen extends Component {
           orientation="portrait"
           keepAwake
         >
-          <Button onPress={this.finishMarking} success>
-            <Text>
+          <Button onPress={this.finishMarking} lg success>
+            <Text size="18px">
               Finish marking
             </Text>
           </Button>
@@ -93,7 +92,7 @@ const styles = StyleSheet.create({
 MarkScreen.propTypes = propTypes;
 
 const mapStateToProps = state => ({
-  marks: state.marks,
+  marks: getMarks(state),
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
