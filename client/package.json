@@ -9,6 +9,7 @@
 	},
 	"dependencies": {
 		"@mapbox/react-native-mapbox-gl": "6.0.0",
+		"@turf/helpers": "5.0.4",
 		"color": "2.0.1",
 		"events": "^1.1.1",
 		"immutability-helper": "2.5.0",
