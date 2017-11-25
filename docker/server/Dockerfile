@@ -56,3 +56,20 @@ RUN echo "Collecting dependencies..." && \
 
 # Install extra dependencies
 RUN pip install opencv-python
+
+# Add package
+WORKDIR /opt
+COPY ./entry.sh /opt/entry.sh
+COPY ./pkg.tar.gz /opt/pkg.tar.gz
+
+# Unpack
+RUN tar -zxvf /opt/pkg.tar.gz && \
+    cd /opt/server && \
+    npm i && \
+    chmod a+x /opt/*
+
+# Expose port
+EXPOSE 3000
+
+# Entrypoint
+ENTRYPOINT ["/opt/entry.sh"]
