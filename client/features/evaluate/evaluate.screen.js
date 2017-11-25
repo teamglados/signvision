@@ -36,19 +36,13 @@ class EvaluateScreen extends Component {
   handleOk = () => {
     if (this.deckSwiper) {
       this.deckSwiper._root.swipeRight();
-      this.handleSwipe();
     }
   }
 
   handleDecline = () => {
     if (this.deckSwiper) {
       this.deckSwiper._root.swipeLeft();
-      this.handleSwipe();
     }
-  }
-
-  handleSwipe = () => {
-    this.setState(prev => ({ swipes: prev.swipes + 1 }));
   }
 
   finishEvaluation = () => {
@@ -78,36 +72,14 @@ class EvaluateScreen extends Component {
 
   render() {
     const { marks, marksByid } = this.props;
-    const { swipes, isModalVisible, commentedItem } = this.state;
+    const { isModalVisible, commentedItem } = this.state;
 
     return (
       <EvaluateScreenWrapper>
-        {swipes === marks.length &&
-          <DoneView>
-            <Icon name="map-signs" size={80} color={primaryColor} />
-
-            <Gutter vertical />
-
-            <Text size="20px" color={primaryColor}>
-              All done for now!
-            </Text>
-
-            <Gutter vertical amount="32px" />
-
-            <Button lg onPress={this.finishEvaluation}>
-              <Text size="18px">
-                Show optimized repair route
-              </Text>
-            </Button>
-          </DoneView>
-        }
-
         <DeckSwiper
           ref={this.setDeckRef}
           dataSource={marks}
           looping={false}
-          onSwipeRight={this.handleSwipe}
-          onSwipeLeft={this.handleSwipe}
           renderItem={item =>
             <Card
               item={marksByid[item.id]}
@@ -116,6 +88,25 @@ class EvaluateScreen extends Component {
               onAddComment={() => this.handleCommentActivation(item)}
             />
           }
+          renderEmpty={() => (
+            <DoneView>
+              <Icon name="map-signs" size={80} color={primaryColor} />
+
+              <Gutter vertical />
+
+              <Text size="20px" color={primaryColor}>
+                All done for now!
+              </Text>
+
+              <Gutter vertical amount="32px" />
+
+              <Button lg onPress={this.finishEvaluation}>
+                <Text size="18px">
+                  Show optimized repair route
+                </Text>
+              </Button>
+            </DoneView>
+          )}
         />
 
         <Modal
@@ -143,16 +134,10 @@ const EvaluateScreenWrapper = styled.View`
 `;
 
 const DoneView = styled.View`
-  flex: 1;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  padding: 32px;
+  padding-top: 48px;
 `;
 
 EvaluateScreen.propTypes = propTypes;

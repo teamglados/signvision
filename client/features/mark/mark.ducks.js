@@ -3,7 +3,7 @@ import { takeLatest, all, put } from 'redux-saga/effects';
 import { createAction, handleActions } from 'redux-actions';
 import update from 'immutability-helper';
 import { createTypes } from '../../common/redux.helpers';
-import { randBetween } from '../../common/utils';
+import { randBetween, guid } from '../../common/utils';
 
 // Action types
 const MARK = createTypes('MARK', ['ADD', 'CAPTURE', 'ADD_COMMENT']);
@@ -69,7 +69,7 @@ function* handleCapturePhoto({ payload }) {
       // TODO: post image and geo position to server
 
       const mark = {
-        id: `mark_${pos.timestamp}`,
+        id: guid(),
         timestamp: pos.timestamp,
         image: 'https://source.unsplash.com/random/500x300',
         comment: '',
