@@ -1,4 +1,5 @@
 const server = require('./server');
+const http = require('./http');
 
 // Collect api and streams
 const { sendEvent } = server;
