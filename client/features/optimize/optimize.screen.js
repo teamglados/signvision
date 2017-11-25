@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components/native';
 import Mapbox from '@mapbox/react-native-mapbox-gl';
+import { lineString as makeLineString } from '@turf/helpers';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
@@ -22,10 +23,8 @@ class OptimizeScreen extends Component {
   render() {
     const { marks } = this.props;
     const center = this.getCenterCoord();
-    const route = {
-      type: 'LineString',
-      coordinates: marks.map(m => [m.geo.long, m.geo.lat]),
-    };
+    const coords = marks.map(m => [m.geo.long, m.geo.lat]);
+    const lineString = makeLineString(coords);
 
     return (
       <OptimizeScreenWrapper>
@@ -35,17 +34,10 @@ class OptimizeScreen extends Component {
           centerCoordinate={center}
           style={styles.map}
         >
-          {/* <Mapbox.ShapeSource id="routeSource" shape={route}>
-            <Mapbox.LineLayer
-              id="routeFill"
-              style={mstyles.route}
-              belowLayerID="originInnerCircle"
-            />
-          </Mapbox.ShapeSource> */}
-          {marks.map((mark, i) =>
+          {marks.map(mark =>
             <Mapbox.PointAnnotation
               key={`${mark.id}_${mark.geo.lat}`}
-              id={`point_${mark.id}_${i}`}
+              id="markPoint"
               coordinate={[mark.geo.long, mark.geo.lat]}
             >
               <Dot>
@@ -54,6 +46,13 @@ class OptimizeScreen extends Component {
               <Mapbox.Callout title="Look! An annotation!" />
             </Mapbox.PointAnnotation>
           )}
+
+          <Mapbox.Animated.ShapeSource id="routeSource" shape={lineString}>
+            <Mapbox.Animated.LineLayer
+              id="routeFill"
+              style={mstyles.route}
+            />
+          </Mapbox.Animated.ShapeSource>
         </Mapbox.MapView>
       </OptimizeScreenWrapper>
     );
