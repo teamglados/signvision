@@ -2,7 +2,7 @@ from __future__ import division, print_function, absolute_import
 
 import tensorflow as tf
 
-from data_import import read_data
+from utils import read_data
 from sklearn.model_selection import train_test_split
 
 data = read_data()
