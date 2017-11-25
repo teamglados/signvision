@@ -10,10 +10,8 @@ const dedupe = require('./dedupe');
 // Create options
 const { port = 3000 } = process.env;
 
-// Create options storage
+// Create options & channel storage
 const options = { port };
-
-// Create channel storage
 const channels = {};
 
 // Create new ws server
