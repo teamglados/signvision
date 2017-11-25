@@ -17,7 +17,7 @@ def read_data(path='GTSRB/Final_Training/Images/*/', shape=(32, 32), true_label=
             if true_label is None:
                 print(filename)
 
-            if label is not 1 and i > 15:
+            if label is not 1 and i > 150:
                 break
 
             im = Image.open(filename)
