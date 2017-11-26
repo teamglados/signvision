@@ -982,7 +982,7 @@ node {
   }
 }
 node {
-  name: "ConvNet/Placeholder"
+  name: "ConvNet/feature_input"
   op: "Placeholder"
   input: "^add"
   attr {
@@ -3580,7 +3580,7 @@ node {
   }
 }
 node {
-  name: "ConvNet_1/Placeholder"
+  name: "ConvNet_1/feature_input"
   op: "Placeholder"
   input: "^add"
   attr {
@@ -14003,7 +14003,7 @@ node {
         dtype: DT_STRING
         tensor_shape {
         }
-        string_val: "_temp_ab0101c4d73346ed92c4b54680eaf431/part"
+        string_val: "_temp_0856d67a756543af91b0ed2baec2438f/part"
       }
     }
   }
