@@ -61,9 +61,17 @@ RUN pip install opencv-python
 WORKDIR /opt
 COPY ./entry.sh /opt/entry.sh
 COPY ./pkg.tar.gz /opt/pkg.tar.gz
+COPY ./cnn.tar.gz /opt/cnn.tar.gz
 
 # Unpack
-RUN tar -zxvf /opt/pkg.tar.gz && \
+RUN tar -zxvf /opt/cnn.tar.gz && \
+    tar -zxvf /opt/pkg.tar.gz
+
+RUN apt-get update -y && \
+    apt-get install python-dev && \
+    cd /opt/cnn_model && \
+    C_INCLUDE_PATH=/usr/include/python2.7 pip install -r requirements.txt && \
+    \
     cd /opt/server && \
     npm i && \
     chmod a+x /opt/* && \
