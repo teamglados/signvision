@@ -35,12 +35,15 @@ def conv_net(features, reuse, n_classes, is_training):
 
         # Fully connected layer (in tf contrib folder for now)
         out = tf.layers.dense(fc1, units=n_classes, name='out')
-    return out
+    return out, x
 
-
+logits_train_x = None
+logits_test_x = None
 def model_fn(features, labels, mode):
-    logits_train = conv_net(features, False, n_classes=num_classes, is_training=True)
-    logits_test = conv_net(features, True, n_classes=num_classes, is_training=False)
+    global logits_train_x
+    global logits_test_x
+    logits_train, logits_train_x = conv_net(features, False, n_classes=num_classes, is_training=True)
+    logits_test, logits_test_x = conv_net(features, True, n_classes=num_classes, is_training=False)
 
     # Predictions
     pred_classes = tf.argmax(logits_test, axis=1)
@@ -72,7 +75,7 @@ def model_fn(features, labels, mode):
     return estim_specs
 
 # Build the Estimator
-model = tf.estimator.Estimator(model_fn)
+model = tf.estimator.Estimator(model_fn, model_dir="trained_model/")
 
 # Define the input function for training
 input_fn = tf.estimator.inputs.numpy_input_fn(
@@ -117,22 +120,4 @@ input_fn = tf.estimator.inputs.numpy_input_fn(
 # Use the Estimator 'evaluate' method
 e = model.evaluate(input_fn)
 print("No stop signs", e)
-import ipdb; ipdb.set_trace()
 
-feature_spec = {
-   'images': tf.placeholder(tf.float32, shape=(None, 32, 32, 3), name='images')
-}
-
-def serving_input_receiver_fn():
-  serialized_tf_example = tf.placeholder(dtype=tf.float32,
-                                         shape=(None, 32, 32, 3),
-                                         name='input')
-  receiver_tensors = {'input': serialized_tf_example}
-  features = tf.parse_example(serialized_tf_example, feature_spec)
-  return tf.estimator.export.ServingInputReceiver(features, receiver_tensors)
-
-# Save model
-# feature_placeholders = {'images': tf.placeholder(tf.float32, shape=(None, 32, 32, 3), name='images')}
-# serving_input_fn = tf.estimator.export.build_raw_serving_input_receiver_fn(feature_placeholders)
-
-model.export_savedmodel("./", serving_input_receiver_fn)
