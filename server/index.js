@@ -1,4 +1,4 @@
-const fs = require('fs');
+const saver = require('base64-img');
 const axios = require('axios');
 const server = require('./server');
 const http = require('./http');
@@ -43,10 +43,13 @@ messages
   if (payload.data) {
 
     // Create filename
-    const filename = `/tmp/${payload.id}-full.jpg`;
+    // const filename = `/tmp/${payload.id}-full.jpg`;
+    const filename = `${payload.id}-full`;
 
     // Write base64 data to JPG file
-    fs.writeFile(filename, payload.data, 'base64', err => {
+    saver.img('data:image/jpg;base64,'+payload.data, '/tmp', filename, (err, data) => {
+
+      // Log error
       if (err) {
         return console.log(err);
       }
