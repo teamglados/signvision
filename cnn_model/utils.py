@@ -17,7 +17,7 @@ def read_data(path='GTSRB/Final_Training/Images/*/', shape=(32, 32), true_label=
             if true_label is None:
                 print(filename)
 
-            if label is not 1 and i > 150:
+            if label is not 1 and i > 200:
                 break
 
             im = Image.open(filename)
@@ -31,8 +31,18 @@ def read_data(path='GTSRB/Final_Training/Images/*/', shape=(32, 32), true_label=
 
     return {"x": np.array(X, dtype=np.float32), "y": np.array(Y, dtype=np.float32)}
 
+def process_image(im, shape=(32, 32)):
+    im = im.convert('RGB')
+    return im.resize(shape, Image.LANCZOS)
 
-def crop_sign(img_path):
+def get_image_array(path):
+    im = Image.open(path)
+    return np.array(process_image(im))
+
+def store_img(path, image, format="jpg"):
+    image.save(path + '.' + format)
+
+def get_crop_sign(img_path):
     img = cv2.imread(img_path)
     original_img = img.copy()
     final_img = Image.open(img_path)
@@ -120,7 +130,7 @@ def crop_sign(img_path):
 
 def crop_frames(filenames):
     for i, file in enumerate(filenames):
-        image = crop_sign(file)
+        image = get_crop_sign(file)
         if image:
             image.save("crop" + str(i) + '.bmp')
         else:
