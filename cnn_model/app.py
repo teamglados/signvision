@@ -8,7 +8,7 @@ app = Flask(__name__)
 @app.route('/predict/<id>', methods=['GET'])
 def predict_sign(id):
     full_path = "/tmp/{0}-full.jpg".format(id)
-    crop_path = "/tmp/{0}.jpg".format(id)
+    crop_path = "/tmp/{0}".format(id)
     cropped_img = get_crop_sign(full_path)
 
     if not cropped_img:
