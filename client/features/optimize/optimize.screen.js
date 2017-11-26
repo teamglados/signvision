@@ -7,8 +7,9 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { lineString as makeLineString } from '@turf/helpers';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { MAP_BOX_TOKEN, MAP_BOX_API } from '../../config';
+import { NavigationActions } from 'react-navigation';
 
+import { MAP_BOX_TOKEN, MAP_BOX_API } from '../../config';
 import { getMarks } from '../mark/mark.ducks';
 import { primaryColorLight } from '../../common/theme';
 
@@ -61,7 +62,11 @@ class OptimizeScreen extends Component {
   }
 
   goHome = () => {
-    this.props.navigation.navigate('Home');
+    const resetAction = NavigationActions.reset({
+      index: 0,
+      actions: [NavigationActions.navigate({ routeName: 'Home' })],
+    });
+    this.props.navigation.dispatch(resetAction);
   }
 
   render() {

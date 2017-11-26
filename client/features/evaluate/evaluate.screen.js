@@ -62,12 +62,13 @@ class EvaluateScreen extends Component {
   }
 
   finishEvaluation = () => {
-    /* NOTE: we need to reset all screens so that camera ('Mark') screen
-     * is unmounted --> clears photo capture interval
-     */
+    this.props.navigation.navigate({ routeName: 'Optimize' });
+  }
+
+  goHome = () => {
     const resetAction = NavigationActions.reset({
       index: 0,
-      actions: [NavigationActions.navigate({ routeName: 'Optimize' })],
+      actions: [NavigationActions.navigate({ routeName: 'Home' })],
     });
     this.props.navigation.dispatch(resetAction);
   }
@@ -92,40 +93,60 @@ class EvaluateScreen extends Component {
 
     return (
       <EvaluateScreenWrapper>
-        <DeckSwiper
-          ref={this.setDeckRef}
-          dataSource={marks}
-          looping={false}
-          onSwipeLeft={this.handleSwipeLeft}
-          onSwipeRight={this.handleSwipeRight}
-          renderItem={item =>
-            <Card
-              item={marksByid[item.id]}
-              onOk={() => this.handleOk(item)}
-              onDecline={() => this.handleDecline(item)}
-              onAddComment={() => this.handleCommentActivation(item)}
-            />
-          }
-          renderEmpty={() => (
-            <DoneView>
-              <Icon name="map-signs" size={80} color={primaryColor} />
+        {marks.length ?
+          <DeckSwiper
+            ref={this.setDeckRef}
+            dataSource={marks}
+            looping={false}
+            onSwipeLeft={this.handleSwipeLeft}
+            onSwipeRight={this.handleSwipeRight}
+            renderItem={item =>
+              <Card
+                item={marksByid[item.id]}
+                onOk={() => this.handleOk(item)}
+                onDecline={() => this.handleDecline(item)}
+                onAddComment={() => this.handleCommentActivation(item)}
+              />
+            }
+            renderEmpty={() => (
+              <DoneView>
+                <Icon name="map-signs" size={80} color={primaryColor} />
 
-              <Gutter vertical />
+                <Gutter vertical />
 
-              <Text size="20px" color={primaryColor}>
-                All done for now!
-              </Text>
-
-              <Gutter vertical amount="32px" />
-
-              <Button lg onPress={this.finishEvaluation}>
-                <Text size="18px">
-                  Show optimized repair route
+                <Text size="20px" color={primaryColor}>
+                  All done for now!
                 </Text>
-              </Button>
-            </DoneView>
-          )}
-        />
+
+                <Gutter vertical amount="32px" />
+
+                <Button lg onPress={this.finishEvaluation}>
+                  <Text size="18px">
+                    Show optimized repair route
+                  </Text>
+                </Button>
+              </DoneView>
+            )}
+          /> :
+
+          <DoneView>
+            <Icon name="smile-o" size={80} color={primaryColor} />
+
+            <Gutter vertical />
+
+            <Text size="20px" color={primaryColor}>
+              No signs to evaluate, good job!
+            </Text>
+
+            <Gutter vertical amount="32px" />
+
+            <Button lg onPress={this.goHome}>
+              <Text size="18px">
+                OK
+              </Text>
+            </Button>
+          </DoneView>
+        }
 
         <Modal
           avoidKeyboard
