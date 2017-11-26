@@ -53,29 +53,28 @@ RUN echo "Collecting dependencies..." && \
     /usr/lib/node_modules/npm/doc /usr/lib/node_modules/npm/html /usr/lib/node_modules/npm/scripts && \
   echo "Version info - node=$(node -v), npm=$(npm -v)"
 
-# Install extra dependencies
-RUN pip install opencv-python
 
-# Add package
+# Workdir
 WORKDIR /opt
+
+# Install extra dependencies
+COPY ./requirements.txt /opt
+RUN pip install -r requirements.txt
+
+# Add packages
 COPY ./entry.sh /opt/entry.sh
 COPY ./pkg.tar.gz /opt/pkg.tar.gz
 COPY ./cnn.tar.gz /opt/cnn.tar.gz
 
 # Unpack
 RUN tar -zxvf /opt/cnn.tar.gz && \
-    tar -zxvf /opt/pkg.tar.gz
-
-RUN cd /opt/cnn_model && \
-    pip install -r requirements.txt && \
-    \
+    tar -zxvf /opt/pkg.tar.gz && \
     cd /opt/server && \
     npm i && \
-    chmod a+x /opt/* && \
-    mkdir /opt/public
+    chmod a+x /opt/*
 
 # Expose ports
 EXPOSE 3000-8080
 
 # Entrypoint
-ENTRYPOINT ["/opt/entry.sh"]
+CMD ["/bin/bash", "/opt/entry.sh"]
