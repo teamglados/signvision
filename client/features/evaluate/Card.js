@@ -33,7 +33,7 @@ class Card extends PureComponent {
     return (
       <CardWrapper>
         <CardImage
-          source={{ uri: item.image }}
+          source={{ uri: 'http://ec2-35-157-114-220.eu-central-1.compute.amazonaws.com:8000/static/' + item.id + '.jpg' }}
           resizeMode="contain"
         />
         <Details>
