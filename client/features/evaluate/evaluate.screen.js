@@ -30,17 +30,22 @@ const propTypes = {
 };
 
 class EvaluateScreen extends Component {
-  state = {
-    swipes: 0,
-    commentedItem: null,
+  constructor(props) {
+    super(props);
+    this.state = {
+      swipes: 0,
+      commentedItem: null,
+      dataSource: props.marks,
+    };
   }
 
-  setDeckRef = (ref) => {
-    this.deckSwiper = ref;
-  }
+  setDeckRef = (ref) => { this.deckSwiper = ref; }
+  showModal = () => this.setState({ isModalVisible: true })
+  hideModal = () => this.setState({ isModalVisible: false })
 
   handleOk = item => {
     if (this.deckSwiper) {
+      this.incSwipes();
       this.props.addMarkType({ id: item.id, type: 'ok' });
       this.deckSwiper._root.swipeRight();
     }
@@ -48,21 +53,28 @@ class EvaluateScreen extends Component {
 
   handleDecline = item => {
     if (this.deckSwiper) {
+      this.incSwipes();
       this.props.addMarkType({ id: item.id, type: 'repair' });
       this.deckSwiper._root.swipeLeft();
     }
   }
 
   handleSwipeLeft = item => {
+    this.incSwipes();
     this.props.addMarkType({ id: item.id, type: 'repair' });
   }
 
   handleSwipeRight = item => {
+    this.incSwipes();
     this.props.addMarkType({ id: item.id, type: 'ok' });
   }
 
+  incSwipes = () => {
+    this.setState(prev => ({ swipes: prev.swipes + 1 }));
+  }
+
   finishEvaluation = () => {
-    this.props.navigation.navigate({ routeName: 'Optimize' });
+    this.props.navigation.navigate('Optimize');
   }
 
   goHome = () => {
@@ -84,19 +96,24 @@ class EvaluateScreen extends Component {
     this.hideModal();
   }
 
-  showModal = () => this.setState({ isModalVisible: true })
-  hideModal = () => this.setState({ isModalVisible: false })
-
   render() {
-    const { marks, marksByid } = this.props;
-    const { isModalVisible, commentedItem } = this.state;
+    const { marksByid } = this.props;
+    const { isModalVisible, commentedItem, swipes, dataSource } = this.state;
 
     return (
       <EvaluateScreenWrapper>
-        {marks.length ?
+        {dataSource.length > 0 &&
+          <Milestone>
+            <Text color={primaryColor}>
+              {swipes} / {dataSource.length}
+            </Text>
+          </Milestone>
+        }
+
+        {dataSource.length ?
           <DeckSwiper
             ref={this.setDeckRef}
-            dataSource={marks}
+            dataSource={dataSource}
             looping={false}
             onSwipeLeft={this.handleSwipeLeft}
             onSwipeRight={this.handleSwipeRight}
@@ -122,7 +139,7 @@ class EvaluateScreen extends Component {
 
                 <Button lg onPress={this.finishEvaluation}>
                   <Text size="18px">
-                    Show optimized repair route
+                    Show maintenance route
                   </Text>
                 </Button>
               </DoneView>
@@ -177,6 +194,12 @@ const DoneView = styled.View`
   justify-content: center;
   align-items: center;
   padding-top: 48px;
+`;
+
+const Milestone = styled.View`
+  margin-bottom: 8px;
+  justify-content: center;
+  align-items: center;
 `;
 
 EvaluateScreen.propTypes = propTypes;

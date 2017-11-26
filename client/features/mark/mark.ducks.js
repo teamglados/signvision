@@ -86,7 +86,8 @@ function* handleCapturePhoto({ payload }) {
       if (!demoCoords.length) return;
 
       const id = guid();
-      const geo = demoCoords.pop();
+      // const geo = demoCoords.pop();
+      const geo = demoCoords[0];
 
       // post image and geo location to server
       yield put(sendMark({

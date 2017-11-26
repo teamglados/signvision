@@ -1,6 +1,7 @@
 import { createClient } from './client';
 
-const wsUrl = '2fd5cbca.ngrok.io';
+// const wsUrl = '2fd5cbca.ngrok.io';
+const wsUrl = 'e9ba5d43.ngrok.io';
 
 // Export middleware function
 export default () => store => {
@@ -12,7 +13,7 @@ export default () => store => {
 
   // Subscribe to messages
   messages.subscribe(evt => {
-    // store.dispatch({ ...evt, server: true });
+    store.dispatch({ ...evt, server: true });
   });
 
   // Test

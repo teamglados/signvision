@@ -6,13 +6,12 @@ import Camera from 'react-native-camera';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { NavigationActions } from 'react-navigation';
-import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { capturePhoto, getMarks } from './mark.ducks';
 import Button from '../common/Button';
 import Text from '../common/Text';
-import { primaryColor } from '../../common/theme';
+import Gutter from '../common/Gutter';
 
 const propTypes = {
   capturePhoto: PropTypes.func.isRequired,
@@ -23,26 +22,9 @@ const propTypes = {
 const PHOTO_INTERVAL = 2000;
 
 class MarkScreen extends Component {
-  state = {
-    markAdded: false,
-  }
-
   componentDidMount() {
     this.captureInterval = setInterval(this.takePhoto, PHOTO_INTERVAL);
   }
-
-  // componentWillReceiveProps(nextProps) {
-  //   console.log('[N]', nextProps, this.props);
-  //   if (nextProps.marks.length > this.props.marks.length) {
-  //     if (this.timeout) return;
-
-  //     this.setState({ markAdded: true });
-
-  //     this.timeout = setTimeout(() => {
-  //       this.setState({ markAdded: false });
-  //     }, 1500);
-  //   }
-  // }
 
   componentWillUnmount() {
     clearInterval(this.captureInterval);
@@ -74,7 +56,7 @@ class MarkScreen extends Component {
   }
 
   render() {
-    const { markAdded } = this.state;
+    const { marks } = this.props;
 
     return (
       <MarkScreenWrapper>
@@ -93,26 +75,41 @@ class MarkScreen extends Component {
             </Text>
           </Button>
 
-          <Modal isVisible={markAdded}>
-            <MarkAdded>
-              <Icon name="map-marker" size={200} color={primaryColor} />
-            </MarkAdded>
-          </Modal>
+          <Count count={marks.length}>
+            <Icon name="map-marker" size={18} color="#fff" />
+            <Gutter amount="6px" />
+            <Text size="20px">
+              {marks.length}
+            </Text>
+          </Count>
         </Camera>
       </MarkScreenWrapper>
     );
   }
 }
 
+const getCountWidth = ({ count }) => {
+  if (count >= 100) return 90;
+  if (count >= 10) return 70;
+  return 60;
+};
+
 const MarkScreenWrapper = styled.View`
   flex: 1;
   flex-direction: row;
 `;
 
-const MarkAdded = styled.View`
-  flex: 1;
+const Count = styled.View`
+  flex-direction: row;
   align-items: center;
   justify-content: center;
+  position: absolute;
+  width: ${props => getCountWidth(props)};
+  height: 40;
+  border-radius: 20;
+  top: 16;
+  right: 16;
+  background-color: ${props => props.theme.primaryColor};
 `;
 
 const styles = StyleSheet.create({

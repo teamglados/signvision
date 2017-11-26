@@ -9,7 +9,7 @@ import { ImageBackground, Dimensions } from 'react-native';
 import Button from '../common/Button';
 import Gutter from '../common/Gutter';
 import Text from '../common/Text';
-import { resetMarks } from '../mark/mark.ducks';
+import { resetMarks, getMarks } from '../mark/mark.ducks';
 
 const propTypes = {
   navigation: PropTypes.object.isRequired,
@@ -33,6 +33,8 @@ class HomeScreen extends Component {
   }
 
   render() {
+    const { marks } = this.props;
+
     return (
       <ImageBackground
         source={require('../../common/home.png')}
@@ -49,18 +51,18 @@ class HomeScreen extends Component {
           <Button onPress={this.goToMark} lg>
             <Icon name="map-signs" size={30} color="#ddd" />
             <Gutter />
-            <Text size="18">
+            <Text size="20px">
               Start marking signs
             </Text>
           </Button>
 
           <Gutter vertical amount="24px" />
 
-          <Button onPress={this.goToOptimize} lg>
+          <Button onPress={this.goToOptimize} disabled={!marks.length} lg>
             <Icon name="map-marker" size={30} color="#ddd" />
             <Gutter />
-            <Text size="18">
-              Optimized repair route
+            <Text size="20px">
+              Maintenance route
             </Text>
           </Button>
         </HomeScreenWrapper>
@@ -88,7 +90,9 @@ const Logo = styled.Image`
 
 HomeScreen.propTypes = propTypes;
 
-const mapStateToProps = () => ({});
+const mapStateToProps = state => ({
+  marks: getMarks(state),
+});
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   resetMarks,

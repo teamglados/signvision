@@ -11,7 +11,7 @@ const Button = ({ children, onPress, disabled, ...rest }) => (
 );
 
 const getBg = props => {
-  if (props.disabled) return props.theme.primaryColorLight;
+  if (props.disabled) return props.theme.primaryColorLighter;
   if (props.success) return props.theme.successColor;
   return props.theme.primaryColor;
 };

@@ -91,7 +91,7 @@ class Card extends Component {
 }
 
 const CardWrapper = styled.View`
-  height: 600px;
+  height: 500px;
   width: ${windowWidth - 24};
   border-radius: 8px;
   flex-direction: column;
@@ -104,7 +104,7 @@ const CardWrapper = styled.View`
 `;
 
 const CardImage = styled.Image`
-  height: 300px;
+  height: 250px;
   width: ${windowWidth - 24};
   border-top-right-radius: 8px;
   border-top-left-radius: 8px;
@@ -156,6 +156,7 @@ const AddComment = styled.View`
 
 const UpdateComment = styled.TouchableOpacity`
   flex-direction: row;
+  align-items: center;
 `;
 
 Card.propTypes = propTypes;
