@@ -54,17 +54,30 @@ messages
       // Log new image
       console.log(`* got new image ${filename}`);
 
-      // Respond
-      sendEvent(chan, 'MARK_RECEIVE', {
-        id: payload.id,
-        timestamp: +new Date(),
-        lat: payload.lat,
-        lng: payload.lng,
-        image: `http://${BASE_PATH}/static/${payload.id}-full.jpg`,
-        image_full: `http://${BASE_PATH}/static/${payload.id}-full.jpg`,
-        probability: 0.95,
-        valid: true
-      });
+      // Try predict
+      axios
+      .get(`http://localhost:8080/predict/${payload.id}`)
+      .then(res => {
+
+        console.log(res.data);
+
+        if (res.data.valid) {
+          // Respond
+          sendEvent(chan, 'MARK_RECEIVE', {
+            id: payload.id,
+            timestamp: +new Date(),
+            lat: payload.lat,
+            lng: payload.lng,
+            image: `http://${BASE_PATH}/static/${payload.id}-full.jpg`,
+            image_full: `http://${BASE_PATH}/static/${payload.id}-full.jpg`,
+            probability: 0,
+            valid: true
+          });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
     });
   }
 });
