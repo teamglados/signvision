@@ -36,18 +36,20 @@ class OptimizeScreen extends Component {
     const { marks } = this.props;
 
     // Build query
-    const coords = marks.reduce((acc, m) => {
-      const lo = `${m.geo.long}`.substring(0, 6);
-      const la = `${m.geo.lat}`.substring(0, 6);
-      acc += `${lo},${la};`;
-      return acc;
-    }, '');
+    const coords = marks
+      .filter(m => m.type === 'repair')
+      .reduce((acc, m) => {
+        const lo = `${m.geo.long}`.substring(0, 6);
+        const la = `${m.geo.lat}`.substring(0, 6);
+        acc += `${lo},${la};`;
+        return acc;
+      }, '');
 
     // Remove last ";" character
     const c = coords.slice(0, -1);
     const p = '&geometries=geojson';
 
-    fetch(`${MAP_BOX_API}/walking/${c}.json?access_token=${MAP_BOX_TOKEN}${p}`)
+    fetch(`${MAP_BOX_API}/driving/${c}.json?access_token=${MAP_BOX_TOKEN}${p}`)
       .then(res => res.json())
       .then(({ routes }) => {
         if (!routes) return;
@@ -86,7 +88,7 @@ class OptimizeScreen extends Component {
               coordinate={[mark.geo.long, mark.geo.lat]}
             >
               <Dot>
-                <DotFill />
+                <DotFill type={mark.type} />
               </Dot>
               <Mapbox.Callout title="Look! An annotation!" />
             </Mapbox.PointAnnotation>
@@ -116,12 +118,18 @@ const Dot = styled.View`
   border-radius: 15;
 `;
 
+const getDotColor = (props) => {
+  if (props.type === 'repair') return props.theme.errorColor;
+  if (props.type === 'ok') return props.theme.successColor;
+  return '#ccc';
+};
+
 const DotFill = styled.View`
   width: 30px;
   height: 30px;
   align-items: center;
   justify-content: center;
-  background-color: ${props => props.theme.primaryColor};
+  background-color: ${props => getDotColor(props)};
   border-radius: 15;
   transform: scale(0.6);
 `;

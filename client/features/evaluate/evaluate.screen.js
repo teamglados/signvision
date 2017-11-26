@@ -8,18 +8,24 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { NavigationActions } from 'react-navigation';
 import Modal from 'react-native-modal';
 
-import { getMarks, getMarksById, addComment } from '../mark/mark.ducks';
 import Card from './Card';
 import CommentForm from './CommentForm';
 import { primaryColor } from '../../common/theme';
 import Button from '../common/Button';
 import Text from '../common/Text';
 import Gutter from '../common/Gutter';
+import {
+  getMarks,
+  getMarksById,
+  addComment,
+  addMarkType,
+} from '../mark/mark.ducks';
 
 const propTypes = {
   marks: PropTypes.array.isRequired,
   navigation: PropTypes.object.isRequired,
   addComment: PropTypes.func.isRequired,
+  addMarkType: PropTypes.func.isRequired,
   marksByid: PropTypes.object.isRequired,
 };
 
@@ -33,16 +39,26 @@ class EvaluateScreen extends Component {
     this.deckSwiper = ref;
   }
 
-  handleOk = () => {
+  handleOk = item => {
     if (this.deckSwiper) {
+      this.props.addMarkType({ id: item.id, type: 'ok' });
       this.deckSwiper._root.swipeRight();
     }
   }
 
-  handleDecline = () => {
+  handleDecline = item => {
     if (this.deckSwiper) {
+      this.props.addMarkType({ id: item.id, type: 'repair' });
       this.deckSwiper._root.swipeLeft();
     }
+  }
+
+  handleSwipeLeft = item => {
+    this.props.addMarkType({ id: item.id, type: 'repair' });
+  }
+
+  handleSwipeRight = item => {
+    this.props.addMarkType({ id: item.id, type: 'ok' });
   }
 
   finishEvaluation = () => {
@@ -80,11 +96,13 @@ class EvaluateScreen extends Component {
           ref={this.setDeckRef}
           dataSource={marks}
           looping={false}
+          onSwipeLeft={this.handleSwipeLeft}
+          onSwipeRight={this.handleSwipeRight}
           renderItem={item =>
             <Card
               item={marksByid[item.id]}
-              onOk={this.handleOk}
-              onDecline={this.handleDecline}
+              onOk={() => this.handleOk(item)}
+              onDecline={() => this.handleDecline(item)}
               onAddComment={() => this.handleCommentActivation(item)}
             />
           }
@@ -149,6 +167,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   addComment,
+  addMarkType,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(EvaluateScreen);

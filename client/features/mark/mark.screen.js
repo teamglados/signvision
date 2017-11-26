@@ -6,22 +6,43 @@ import Camera from 'react-native-camera';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { NavigationActions } from 'react-navigation';
+import Modal from 'react-native-modal';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { capturePhoto, getMarks } from './mark.ducks';
 import Button from '../common/Button';
 import Text from '../common/Text';
+import { primaryColor } from '../../common/theme';
 
 const propTypes = {
   capturePhoto: PropTypes.func.isRequired,
   navigation: PropTypes.object.isRequired,
+  marks: PropTypes.array.isRequired,
 };
 
 const PHOTO_INTERVAL = 2000;
 
 class MarkScreen extends Component {
+  state = {
+    markAdded: false,
+  }
+
   componentDidMount() {
     this.captureInterval = setInterval(this.takePhoto, PHOTO_INTERVAL);
   }
+
+  // componentWillReceiveProps(nextProps) {
+  //   console.log('[N]', nextProps, this.props);
+  //   if (nextProps.marks.length > this.props.marks.length) {
+  //     if (this.timeout) return;
+
+  //     this.setState({ markAdded: true });
+
+  //     this.timeout = setTimeout(() => {
+  //       this.setState({ markAdded: false });
+  //     }, 1500);
+  //   }
+  // }
 
   componentWillUnmount() {
     clearInterval(this.captureInterval);
@@ -48,11 +69,13 @@ class MarkScreen extends Component {
       index: 0,
       actions: [NavigationActions.navigate({ routeName: 'Evaluate' })],
     });
+
     this.props.navigation.dispatch(resetAction);
-    // this.props.navigation.navigate('Optimize');
   }
 
   render() {
+    const { markAdded } = this.state;
+
     return (
       <MarkScreenWrapper>
         <Camera
@@ -69,6 +92,12 @@ class MarkScreen extends Component {
               Finish marking
             </Text>
           </Button>
+
+          <Modal isVisible={markAdded}>
+            <MarkAdded>
+              <Icon name="map-marker" size={200} color={primaryColor} />
+            </MarkAdded>
+          </Modal>
         </Camera>
       </MarkScreenWrapper>
     );
@@ -78,6 +107,12 @@ class MarkScreen extends Component {
 const MarkScreenWrapper = styled.View`
   flex: 1;
   flex-direction: row;
+`;
+
+const MarkAdded = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
 `;
 
 const styles = StyleSheet.create({

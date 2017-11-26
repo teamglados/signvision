@@ -2,13 +2,17 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
 import Button from '../common/Button';
 import Gutter from '../common/Gutter';
 import Text from '../common/Text';
+import { resetMarks } from '../mark/mark.ducks';
 
 const propTypes = {
   navigation: PropTypes.object.isRequired,
+  resetMarks: PropTypes.func.isRequired,
 };
 
 class HomeScreen extends Component {
@@ -17,6 +21,7 @@ class HomeScreen extends Component {
   }
 
   goToMark = () => {
+    this.props.resetMarks();
     this.props.navigation.navigate('Mark');
   }
 
@@ -44,16 +49,6 @@ class HomeScreen extends Component {
             Optimized repair route
           </Text>
         </Button>
-
-        {/* <Gutter vertical amount="24px" />
-
-        <Button onPress={this.goToOptimize} lg>
-          <Icon name="eye" size={30} color="#ddd" />
-          <Gutter />
-          <Text size="18">
-            Evaluate signs
-          </Text>
-        </Button> */}
       </HomeScreenWrapper>
     );
   }
@@ -69,4 +64,10 @@ const HomeScreenWrapper = styled.View`
 
 HomeScreen.propTypes = propTypes;
 
-export default HomeScreen;
+const mapStateToProps = () => ({});
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  resetMarks,
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
