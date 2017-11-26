@@ -4,6 +4,7 @@ import tensorflow as tf
 
 from utils import read_data
 from sklearn.model_selection import train_test_split
+import numpy as np
 
 data = read_data()
 X_train = data["x"]
@@ -22,7 +23,7 @@ num_classes = 2 # Only stop sign
 def conv_net(features, reuse, n_classes, is_training):
     # Define a scope for reusing the variables
     with tf.variable_scope('ConvNet', reuse=reuse):
-        x = tf.placeholder(tf.float32, shape=(None, 32, 32, 3))
+        x = tf.placeholder(tf.float32, shape=(None, 32, 32, 3), name="feature_input")
         x = features['images']
 
         # Layer 1: Convolutional. Input = 32x32x3. Output = 28x28x32.
@@ -35,15 +36,11 @@ def conv_net(features, reuse, n_classes, is_training):
 
         # Fully connected layer (in tf contrib folder for now)
         out = tf.layers.dense(fc1, units=n_classes, name='out')
-    return out, x
+    return out
 
-logits_train_x = None
-logits_test_x = None
 def model_fn(features, labels, mode):
-    global logits_train_x
-    global logits_test_x
-    logits_train, logits_train_x = conv_net(features, False, n_classes=num_classes, is_training=True)
-    logits_test, logits_test_x = conv_net(features, True, n_classes=num_classes, is_training=False)
+    logits_train = conv_net(features, False, n_classes=num_classes, is_training=True)
+    logits_test = conv_net(features, True, n_classes=num_classes, is_training=False)
 
     # Predictions
     pred_classes = tf.argmax(logits_test, axis=1)
@@ -62,6 +59,7 @@ def model_fn(features, labels, mode):
 
     # Evaluate the accuracy of the model
     acc_op = tf.metrics.accuracy(labels=labels, predictions=pred_classes)
+
 
     # TF Estimators requires to return a EstimatorSpec, that specify
     # the different ops for training, evaluating, ...
@@ -84,40 +82,15 @@ input_fn = tf.estimator.inputs.numpy_input_fn(
 # Train the Model
 model.train(input_fn, steps=num_steps)
 
-# Evaluate the Model
-# Define the input function for evaluating
-input_fn = tf.estimator.inputs.numpy_input_fn(
-    x={'images': X_train}, y=y_train,
-    batch_size=batch_size, shuffle=False)
-# Use the Estimator 'evaluate' method
-e = model.evaluate(input_fn)
+def predict(image_array):
+    input_fn = tf.estimator.inputs.numpy_input_fn(x={'images': np.array([image_array])}, num_epochs=1, shuffle=False)
+    v = list(model.predict(input_fn))
+    return v
 
 validation_data = read_data(path='validation/', true_label=None)
 X_val = validation_data['x']
 y_val = validation_data['y']
 
-# Evaluate the Model
-# Define the input function for evaluating
-input_fn = tf.estimator.inputs.numpy_input_fn(
-    x={'images': X_val}, y=y_val,
-    batch_size=batch_size, shuffle=False)
-# Use the Estimator 'evaluate' method
-e = model.evaluate(input_fn)
-print("Stop signs", e)
-# Validate model
-# input_fn = tf.estimator.inputs.numpy_input_fn(x={'images': X_val}, num_epochs=1, shuffle=False)
-# v = list(model.predict(input_fn))
-# print("Predicted stop signs", v)
-# print("Testing Accuracy:", e['accuracy'])
-
-validation_data = read_data(path='validation_false/', true_label="asd")
-X_val = validation_data['x']
-y_val = validation_data['y']
-
-input_fn = tf.estimator.inputs.numpy_input_fn(
-    x={'images': X_val}, y=y_val,
-    batch_size=batch_size, shuffle=False)
-# Use the Estimator 'evaluate' method
-e = model.evaluate(input_fn)
-print("No stop signs", e)
-
+validation_data_false = read_data(path='validation_false/', true_label="asd")
+X_val_false = validation_data_false['x']
+y_val_false = validation_data_false['y']
