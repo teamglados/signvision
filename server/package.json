@@ -26,6 +26,7 @@
   "homepage": "https://github.com/nardeas/glados/server#readme",
   "dependencies": {
     "axios": "^0.17.1",
+    "base64-img": "^1.0.3",
     "jsonwebtoken": "^8.1.0",
     "koa": "^2.4.1",
     "koa-mount": "^3.0.0",
