@@ -1,7 +1,7 @@
 import { createClient } from './client';
 
 // const wsUrl = '2fd5cbca.ngrok.io';
-const wsUrl = 'e9ba5d43.ngrok.io';
+const wsUrl = 'ca5b2adf.ngrok.io';
 
 // Export middleware function
 export default () => store => {

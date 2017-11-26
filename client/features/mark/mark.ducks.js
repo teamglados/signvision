@@ -86,7 +86,6 @@ function* handleCapturePhoto({ payload }) {
       if (!demoCoords.length) return;
 
       const id = guid();
-      // const geo = demoCoords.pop();
       const geo = demoCoords[0];
 
       // post image and geo location to server
@@ -104,6 +103,9 @@ function* handleCapturePhoto({ payload }) {
 }
 
 function* handleMarkReceive({ payload }) {
+  // Consume coords
+  if (demoCoords.length) demoCoords.shift();
+
   const {
     id,
     timestamp,

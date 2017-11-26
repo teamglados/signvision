@@ -21,9 +21,11 @@ const propTypes = {
 class OptimizeScreen extends Component {
   state = {
     route: null,
+    adById: null,
   }
 
   componentWillMount() {
+    this.getAddresses();
     this.getDirections();
   }
 
@@ -31,6 +33,28 @@ class OptimizeScreen extends Component {
     const { marks } = this.props;
     if (!marks.length) return [11.256, 43.770];
     return [marks[0].geo.long, marks[0].geo.lat];
+  }
+
+  getAddresses = () => {
+    const { marks } = this.props;
+    const promises = [];
+
+    marks.forEach(({ geo, id }) => {
+      promises.push(
+        fetch(`http://nominatim.openstreetmap.org/reverse?format=json&lat=${geo.lat}&lon=${geo.long}&zoom=18&addressdetails=1`) // eslint-disable-line
+          .then(res => res.json())
+          .then(({ address }) => ({ address, id }))
+      );
+    });
+
+    Promise.all(promises)
+      .then(addresses => {
+        const adById = {};
+        addresses.forEach(({ address, id }) => {
+          adById[id] = `${address.road}, ${address.suburb}, ${address.city}`;
+        });
+        this.setState({ adById });
+      });
   }
 
   getDirections = () => {
@@ -70,9 +94,11 @@ class OptimizeScreen extends Component {
   }
 
   render() {
-    const { route } = this.state;
+    const { route, adById } = this.state;
     const { marks } = this.props;
     const center = this.getCenterCoord();
+
+    if (!adById) return null;
 
     return (
       <OptimizeScreenWrapper>
@@ -88,14 +114,15 @@ class OptimizeScreen extends Component {
 
           {marks.map(mark =>
             <Mapbox.PointAnnotation
-              key={`${mark.id}_${mark.geo.lat}`}
-              id="markPoint"
+              key={`${mark.id}`}
+              id={`${mark.id}`}
               coordinate={[mark.geo.long, mark.geo.lat]}
+              title={adById[mark.id]}
             >
               <Dot>
                 <DotFill type={mark.type} />
               </Dot>
-              <Mapbox.Callout title="Look! An annotation!" />
+              <Mapbox.Callout title={adById[mark.id]} />
             </Mapbox.PointAnnotation>
           )}
 

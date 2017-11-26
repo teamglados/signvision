@@ -33,9 +33,8 @@ class EvaluateScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      swipes: 0,
       commentedItem: null,
-      dataSource: props.marks,
+      dataSource: [...props.marks],
     };
   }
 
@@ -45,32 +44,24 @@ class EvaluateScreen extends Component {
 
   handleOk = item => {
     if (this.deckSwiper) {
-      this.incSwipes();
-      this.props.addMarkType({ id: item.id, type: 'ok' });
       this.deckSwiper._root.swipeRight();
+      this.props.addMarkType({ id: item.id, type: 'ok' });
     }
   }
 
   handleDecline = item => {
     if (this.deckSwiper) {
-      this.incSwipes();
-      this.props.addMarkType({ id: item.id, type: 'repair' });
       this.deckSwiper._root.swipeLeft();
+      this.props.addMarkType({ id: item.id, type: 'repair' });
     }
   }
 
   handleSwipeLeft = item => {
-    this.incSwipes();
     this.props.addMarkType({ id: item.id, type: 'repair' });
   }
 
   handleSwipeRight = item => {
-    this.incSwipes();
     this.props.addMarkType({ id: item.id, type: 'ok' });
-  }
-
-  incSwipes = () => {
-    this.setState(prev => ({ swipes: prev.swipes + 1 }));
   }
 
   finishEvaluation = () => {
@@ -97,8 +88,12 @@ class EvaluateScreen extends Component {
   }
 
   render() {
-    const { marksByid } = this.props;
-    const { isModalVisible, commentedItem, swipes, dataSource } = this.state;
+    const { marksByid, marks } = this.props;
+    const { isModalVisible, commentedItem, dataSource } = this.state;
+    const swipes = marks.reduce((sum, mark) => {
+      if (mark.type === 'repair' || mark.type === 'ok') sum += 1;
+      return sum;
+    }, 0);
 
     return (
       <EvaluateScreenWrapper>

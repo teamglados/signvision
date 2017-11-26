@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -26,7 +26,7 @@ const propTypes = {
 
 const { width: windowWidth } = Dimensions.get('window');
 
-class Card extends Component {
+class Card extends PureComponent {
   render() {
     const { item, onOk, onDecline, onAddComment } = this.props;
 
@@ -34,7 +34,7 @@ class Card extends Component {
       <CardWrapper>
         <CardImage
           source={{ uri: item.image }}
-          resizeMode="cover"
+          resizeMode="contain"
         />
         <Details>
           <Icon name="clock-o" size={18} color="#444" />
@@ -101,6 +101,7 @@ const CardWrapper = styled.View`
   shadow-color: #000;
   shadow-offset: 0px 4px;
   padding-bottom: 16px;
+  elevation: 3;
 `;
 
 const CardImage = styled.Image`
@@ -146,6 +147,7 @@ const Details = styled.View`
   padding-horizontal: 16px;
   flex-direction: row;
   align-items: center;
+  justify-content: center;
 `;
 
 const AddComment = styled.View`

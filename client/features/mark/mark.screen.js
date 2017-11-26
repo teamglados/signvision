@@ -19,7 +19,7 @@ const propTypes = {
   marks: PropTypes.array.isRequired,
 };
 
-const PHOTO_INTERVAL = 2000;
+const PHOTO_INTERVAL = 1000;
 
 class MarkScreen extends Component {
   componentDidMount() {
@@ -68,6 +68,7 @@ class MarkScreen extends Component {
           captureQuality={Camera.constants.CaptureQuality['480p']}
           orientation="portrait"
           keepAwake
+          fixOrientation
         >
           <Button onPress={this.finishMarking} lg success>
             <Text size="18px">
