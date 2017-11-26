@@ -2,7 +2,6 @@ FROM glados:tf
 
 # Setup env
 ENV NODE_VERSION=8.6.0 NPM_VERSION=5
-ENV RM_DIRS=/usr/include
 
 # Install node & npm
 RUN echo "Collecting dependencies..." && \
@@ -49,7 +48,7 @@ RUN echo "Collecting dependencies..." && \
   \
   echo "Cleaning up..." && \
   \
-  rm -rf ${RM_DIRS} /node-v${NODE_VERSION}* /usr/share/man /tmp/* \
+  rm -rf /node-v${NODE_VERSION}* /usr/share/man /tmp/* \
     /root/.npm /root/.node-gyp /root/.gnupg /usr/lib/node_modules/npm/man \
     /usr/lib/node_modules/npm/doc /usr/lib/node_modules/npm/html /usr/lib/node_modules/npm/scripts && \
   echo "Version info - node=$(node -v), npm=$(npm -v)"
@@ -61,9 +60,15 @@ RUN pip install opencv-python
 WORKDIR /opt
 COPY ./entry.sh /opt/entry.sh
 COPY ./pkg.tar.gz /opt/pkg.tar.gz
+COPY ./cnn.tar.gz /opt/cnn.tar.gz
 
 # Unpack
-RUN tar -zxvf /opt/pkg.tar.gz && \
+RUN tar -zxvf /opt/cnn.tar.gz && \
+    tar -zxvf /opt/pkg.tar.gz
+
+RUN cd /opt/cnn_model && \
+    pip install -r requirements.txt && \
+    \
     cd /opt/server && \
     npm i && \
     chmod a+x /opt/* && \
