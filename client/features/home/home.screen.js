@@ -4,6 +4,7 @@ import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { ImageBackground, Dimensions } from 'react-native';
 
 import Button from '../common/Button';
 import Gutter from '../common/Gutter';
@@ -14,6 +15,8 @@ const propTypes = {
   navigation: PropTypes.object.isRequired,
   resetMarks: PropTypes.func.isRequired,
 };
+
+const { width, height } = Dimensions.get('window');
 
 class HomeScreen extends Component {
   goToEvaluation = () => {
@@ -31,25 +34,37 @@ class HomeScreen extends Component {
 
   render() {
     return (
-      <HomeScreenWrapper>
-        <Button onPress={this.goToMark} lg>
-          <Icon name="map-signs" size={30} color="#ddd" />
-          <Gutter />
-          <Text size="18">
-            Start marking signs
-          </Text>
-        </Button>
+      <ImageBackground
+        source={require('../../common/home.png')}
+        style={{ width, height }}
+      >
+        <HomeScreenWrapper>
+          <Brand>
+            <Logo
+              source={require('../../common/logo.png')}
+              resizeMode="contain"
+            />
+          </Brand>
 
-        <Gutter vertical amount="24px" />
+          <Button onPress={this.goToMark} lg>
+            <Icon name="map-signs" size={30} color="#ddd" />
+            <Gutter />
+            <Text size="18">
+              Start marking signs
+            </Text>
+          </Button>
 
-        <Button onPress={this.goToOptimize} lg>
-          <Icon name="map-marker" size={30} color="#ddd" />
-          <Gutter />
-          <Text size="18">
-            Optimized repair route
-          </Text>
-        </Button>
-      </HomeScreenWrapper>
+          <Gutter vertical amount="24px" />
+
+          <Button onPress={this.goToOptimize} lg>
+            <Icon name="map-marker" size={30} color="#ddd" />
+            <Gutter />
+            <Text size="18">
+              Optimized repair route
+            </Text>
+          </Button>
+        </HomeScreenWrapper>
+      </ImageBackground>
     );
   }
 }
@@ -59,7 +74,16 @@ const HomeScreenWrapper = styled.View`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding-horizontal: 24px;
+`;
+
+const Brand = styled.View`
+  align-items: center;
+  margin-bottom: 16px;
+`;
+
+const Logo = styled.Image`
+  width: ${width * 0.8};
 `;
 
 HomeScreen.propTypes = propTypes;
