@@ -79,13 +79,13 @@ model = tf.estimator.Estimator(model_fn, model_dir="trained_model/")
 input_fn = tf.estimator.inputs.numpy_input_fn(
     x={'images': X_train}, y=y_train,
     batch_size=batch_size, num_epochs=None, shuffle=True)
+
 # Train the Model
-model.train(input_fn, steps=num_steps)
+#model.train(input_fn, steps=num_steps)
 
 def predict(image_array):
-    input_fn = tf.estimator.inputs.numpy_input_fn(x={'images': np.array([image_array])}, num_epochs=1, shuffle=False)
-    v = list(model.predict(input_fn))
-    return v
+    input_fn = tf.estimator.inputs.numpy_input_fn(x={'images': np.array([image_array], dtype=np.float32)}, num_epochs=1, shuffle=False)
+    return list(model.predict(input_fn))
 
 validation_data = read_data(path='validation/', true_label=None)
 X_val = validation_data['x']

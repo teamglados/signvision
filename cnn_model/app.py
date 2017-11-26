@@ -5,11 +5,18 @@ import numpy as np
 import time
 app = Flask(__name__)
 
-@app.route('/predict/<id>', methods=['POST'])
+@app.route('/predict/<id>', methods=['GET'])
 def predict_sign(id):
-    full_path = "static/" + id + "full" + ".jpg"
-    crop_path = "static/" + id + ".jpg"
+    full_path = "/tmp/{0}-full.jpg".format(id)
+    crop_path = "/tmp/{0}.jpg".format(id)
     cropped_img = get_crop_sign(full_path)
+
+    if not cropped_img:
+        return jsonify({
+            'image': None,
+            'valid': False
+        })
+
     store_img(path=crop_path, image=cropped_img)
     label = predict(np.array(process_image(cropped_img)))
 
@@ -22,4 +29,5 @@ def predict_sign(id):
 
     return jsonify(data)
 
-
+if __name__ == '__main__':
+    app.run(port=8080)
