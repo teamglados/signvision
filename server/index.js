@@ -11,7 +11,7 @@ const { sendEvent } = server;
 const { connections, messages, errors, options } = server;
 
 // Create history storage
-const history = {};
+const history = {cooldown: 0};
 
 // New connections
 connections.subscribe(([ws, chan]) => {
@@ -29,15 +29,6 @@ messages
 .subscribe(([evt, chan]) => {
 
   const { payload } = evt;
-
-  // IN:
-  //   {
-  //     id: 4575917962,
-  //     timestamp: 1511649981213,
-  //     lat: 60.299,
-  //     lng: 24.2119,
-  //     data: <base64>
-  //   }
 
   // Let's hack it together
   if (payload.data) {
@@ -62,20 +53,28 @@ messages
       .get(`http://localhost:8080/predict/${payload.id}`)
       .then(res => {
 
-        console.log(res.data);
+        // Compute cooldown
+        const cooldown = (+new Date() - history.cooldown);
 
-        if (res.data.valid) {
-          // Respond
+        // Should handle
+        if (res.data.valid && cooldown > 5000) {
           sendEvent(chan, 'MARK_RECEIVE', {
             id: payload.id,
             timestamp: +new Date(),
             lat: payload.lat,
             lng: payload.lng,
-            image: `http://${BASE_PATH}/static/${payload.id}-full.jpg`,
+            image: `http://${BASE_PATH}/static/${payload.id}.jpg`,
             image_full: `http://${BASE_PATH}/static/${payload.id}-full.jpg`,
             probability: 0,
             valid: true
           });
+
+          history.cooldown = +new Date();
+          console.log(`* [id:${payload.id}] valid=${res.data.valid}, cooldown=0`);
+        }
+        // Not handled
+        else {
+          console.log(`* [id:${payload.id}] valid=${res.data.valid}, cooldown=${cooldown}`);
         }
       })
       .catch(err => {
