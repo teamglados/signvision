@@ -11,7 +11,7 @@ const { sendEvent } = server;
 const { connections, messages, errors, options } = server;
 
 // Create history storage
-const history = {cooldown: 0};
+let history = {cooldown: 0};
 
 // New connections
 connections.subscribe(([ws, chan]) => {
@@ -37,50 +37,49 @@ messages
     // const filename = `/tmp/${payload.id}-full.jpg`;
     const filename = `${payload.id}-full`;
 
-    // Write base64 data to JPG file
-    saver.img('data:image/jpg;base64,'+payload.data, '/tmp', filename, (err, data) => {
+    // Compute cooldown
+    let cooldown = (+new Date() - history.cooldown);
 
-      // Log error
-      if (err) {
-        return console.log(err);
-      }
+    // Accept positive result only every 5 seconds
+    if (cooldown > 5000) {
 
-      // Log new image
-      console.log(`* got new image ${filename}`);
+      // Write base64 data to JPG file
+      saver.img('data:image/jpg;base64,'+payload.data, '/tmp', filename, (err, data) => {
 
-      // Try predict
-      axios
-      .get(`http://localhost:8080/predict/${payload.id}`)
-      .then(res => {
+        // Log error
+        if (err) return console.log(err);
 
-        // Compute cooldown
-        const cooldown = (+new Date() - history.cooldown);
+        // Log new image
+        console.log(`* got new image ${filename}`);
 
-        // Should handle
-        if (res.data.valid && cooldown > 5000) {
-          sendEvent(chan, 'MARK_RECEIVE', {
-            id: payload.id,
-            timestamp: +new Date(),
-            lat: payload.lat,
-            lng: payload.lng,
-            image: `http://${BASE_PATH}/static/${payload.id}.jpg`,
-            image_full: `http://${BASE_PATH}/static/${payload.id}-full.jpg`,
-            probability: 0,
-            valid: true
-          });
-
-          history.cooldown = +new Date();
-          console.log(`* [id:${payload.id}] valid=${res.data.valid}, cooldown=0`);
-        }
-        // Not handled
-        else {
-          console.log(`* [id:${payload.id}] valid=${res.data.valid}, cooldown=${cooldown}`);
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
-    });
+        // Try predict
+        axios
+        .get(`http://localhost:8080/predict/${payload.id}`)
+        .then(res => {
+          // Should handle
+          if (res.data.valid) {
+            sendEvent(chan, 'MARK_RECEIVE', {
+              id: payload.id,
+              timestamp: +new Date(),
+              lat: payload.lat,
+              lng: payload.lng,
+              image: `http://${BASE_PATH}/static/${payload.id}.jpg`,
+              image_full: `http://${BASE_PATH}/static/${payload.id}-full.jpg`,
+              probability: 0,
+              valid: true
+            });
+            history.cooldown = +new Date();
+            console.log(`* [id:${payload.id}] valid=${res.data.valid}, cooldown=0`);
+          }
+        })
+        .catch(err => {
+          console.log(err.toString());
+        });
+      });
+    }
+    else {
+      console.log(`* [id:${payload.id}] cooldown=${cooldown}`);
+    }
   }
 });
 
