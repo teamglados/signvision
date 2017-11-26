@@ -8,18 +8,24 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { NavigationActions } from 'react-navigation';
 import Modal from 'react-native-modal';
 
-import { getMarks, getMarksById, addComment } from '../mark/mark.ducks';
 import Card from './Card';
 import CommentForm from './CommentForm';
 import { primaryColor } from '../../common/theme';
 import Button from '../common/Button';
 import Text from '../common/Text';
 import Gutter from '../common/Gutter';
+import {
+  getMarks,
+  getMarksById,
+  addComment,
+  addMarkType,
+} from '../mark/mark.ducks';
 
 const propTypes = {
   marks: PropTypes.array.isRequired,
   navigation: PropTypes.object.isRequired,
   addComment: PropTypes.func.isRequired,
+  addMarkType: PropTypes.func.isRequired,
   marksByid: PropTypes.object.isRequired,
 };
 
@@ -33,25 +39,36 @@ class EvaluateScreen extends Component {
     this.deckSwiper = ref;
   }
 
-  handleOk = () => {
+  handleOk = item => {
     if (this.deckSwiper) {
+      this.props.addMarkType({ id: item.id, type: 'ok' });
       this.deckSwiper._root.swipeRight();
     }
   }
 
-  handleDecline = () => {
+  handleDecline = item => {
     if (this.deckSwiper) {
+      this.props.addMarkType({ id: item.id, type: 'repair' });
       this.deckSwiper._root.swipeLeft();
     }
   }
 
+  handleSwipeLeft = item => {
+    this.props.addMarkType({ id: item.id, type: 'repair' });
+  }
+
+  handleSwipeRight = item => {
+    this.props.addMarkType({ id: item.id, type: 'ok' });
+  }
+
   finishEvaluation = () => {
-    /* NOTE: we need to reset all screens so that camera ('Mark') screen
-     * is unmounted --> clears photo capture interval
-     */
+    this.props.navigation.navigate({ routeName: 'Optimize' });
+  }
+
+  goHome = () => {
     const resetAction = NavigationActions.reset({
       index: 0,
-      actions: [NavigationActions.navigate({ routeName: 'Optimize' })],
+      actions: [NavigationActions.navigate({ routeName: 'Home' })],
     });
     this.props.navigation.dispatch(resetAction);
   }
@@ -76,38 +93,60 @@ class EvaluateScreen extends Component {
 
     return (
       <EvaluateScreenWrapper>
-        <DeckSwiper
-          ref={this.setDeckRef}
-          dataSource={marks}
-          looping={false}
-          renderItem={item =>
-            <Card
-              item={marksByid[item.id]}
-              onOk={this.handleOk}
-              onDecline={this.handleDecline}
-              onAddComment={() => this.handleCommentActivation(item)}
-            />
-          }
-          renderEmpty={() => (
-            <DoneView>
-              <Icon name="map-signs" size={80} color={primaryColor} />
+        {marks.length ?
+          <DeckSwiper
+            ref={this.setDeckRef}
+            dataSource={marks}
+            looping={false}
+            onSwipeLeft={this.handleSwipeLeft}
+            onSwipeRight={this.handleSwipeRight}
+            renderItem={item =>
+              <Card
+                item={marksByid[item.id]}
+                onOk={() => this.handleOk(item)}
+                onDecline={() => this.handleDecline(item)}
+                onAddComment={() => this.handleCommentActivation(item)}
+              />
+            }
+            renderEmpty={() => (
+              <DoneView>
+                <Icon name="map-signs" size={80} color={primaryColor} />
 
-              <Gutter vertical />
+                <Gutter vertical />
 
-              <Text size="20px" color={primaryColor}>
-                All done for now!
-              </Text>
-
-              <Gutter vertical amount="32px" />
-
-              <Button lg onPress={this.finishEvaluation}>
-                <Text size="18px">
-                  Show optimized repair route
+                <Text size="20px" color={primaryColor}>
+                  All done for now!
                 </Text>
-              </Button>
-            </DoneView>
-          )}
-        />
+
+                <Gutter vertical amount="32px" />
+
+                <Button lg onPress={this.finishEvaluation}>
+                  <Text size="18px">
+                    Show optimized repair route
+                  </Text>
+                </Button>
+              </DoneView>
+            )}
+          /> :
+
+          <DoneView>
+            <Icon name="smile-o" size={80} color={primaryColor} />
+
+            <Gutter vertical />
+
+            <Text size="20px" color={primaryColor}>
+              No signs to evaluate, good job!
+            </Text>
+
+            <Gutter vertical amount="32px" />
+
+            <Button lg onPress={this.goHome}>
+              <Text size="18px">
+                OK
+              </Text>
+            </Button>
+          </DoneView>
+        }
 
         <Modal
           avoidKeyboard
@@ -149,6 +188,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   addComment,
+  addMarkType,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(EvaluateScreen);

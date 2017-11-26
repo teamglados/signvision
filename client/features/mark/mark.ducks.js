@@ -1,12 +1,15 @@
 import RNFS from 'react-native-fs';
-import { takeLatest, all, put } from 'redux-saga/effects';
+import { takeEvery, all, put } from 'redux-saga/effects';
 import { createAction, handleActions } from 'redux-actions';
 import update from 'immutability-helper';
 import { createTypes } from '../../common/redux.helpers';
-import { randBetween, guid } from '../../common/utils';
+import { guid } from '../../common/utils';
+import { demoCoords } from '../../common/demo';
 
 // Action types
-const MARK = createTypes('MARK', ['ADD', 'CAPTURE', 'ADD_COMMENT']);
+const MARK = createTypes('MARK', [
+  'ADD', 'CAPTURE', 'ADD_COMMENT', 'ADD_TYPE', 'RESET', 'RECEIVE', 'SEND',
+]);
 
 
 const initialState = {
@@ -15,6 +18,9 @@ const initialState = {
 
 // Reducer
 export default handleActions({
+  [MARK.RESET]: state => update(state, {
+    marks: { $set: {} },
+  }),
   [MARK.ADD]: (state, action) => update(state, {
     marks: {
       [action.payload.id]: { $set: action.payload },
@@ -27,11 +33,21 @@ export default handleActions({
       },
     },
   }),
+  [MARK.ADD_TYPE]: (state, action) => update(state, {
+    marks: {
+      [action.payload.id]: {
+        type: { $set: action.payload.type }
+      },
+    },
+  }),
 }, initialState);
 
 export const addMark = createAction(MARK.ADD);
 export const capturePhoto = createAction(MARK.CAPTURE);
 export const addComment = createAction(MARK.ADD_COMMENT);
+export const addMarkType = createAction(MARK.ADD_TYPE);
+export const resetMarks = createAction(MARK.RESET);
+export const sendMark = createAction(MARK.SEND);
 
 // Selectors
 export const getMarks = ({ mark }) => Object.values(mark.marks);
@@ -59,38 +75,65 @@ function* handleCapturePhoto({ payload }) {
     const { path } = payload;
 
     // First get the current location
-    const pos = yield getPosition();
+    const { coords, timestamp } = yield getPosition();
     const stats = yield RNFS.stat(path);
+    console.log('Real coords', coords);
 
     if (stats.isFile()) {
       const contents = yield RNFS.readFile(path, 'base64');
-      console.log(contents[0]);
-      console.log(pos);
-      // TODO: post image and geo position to server
-
-      const mark = {
-        id: guid(),
-        timestamp: pos.timestamp,
-        image: 'https://source.unsplash.com/random/500x300',
-        comment: '',
-        geo: {
-          lat: pos.coords.latitude + (randBetween(1, 10) * 0.0001),
-          long: pos.coords.longitude - (randBetween(1, 50) * 0.001),
-        },
-      };
-
-      console.log('[ADDING MARK]');
-      yield put(addMark(mark));
-
       RNFS.unlink(path); // Delete tmp file
+
+      if (!demoCoords.length) return;
+
+      const id = guid();
+      const geo = demoCoords.pop();
+
+      // post image and geo location to server
+      yield put(sendMark({
+        id,
+        timestamp,
+        lat: geo.lat,
+        lng: geo.long,
+        data: contents,
+      }));
     }
   } catch (e) {
     console.error(e);
   }
 }
 
+function* handleMarkReceive({ payload }) {
+  const {
+    id,
+    timestamp,
+    image,
+    image_full,
+    probability,
+    valid,
+    lat,
+    lng,
+  } = payload;
+
+  if (valid) {
+    const mark = {
+      id,
+      timestamp,
+      image,
+      probability,
+      imageFull: image_full,
+      comment: '',
+      type: null,
+      geo: { lat, long: lng },
+    };
+
+    console.log('[ADDING MARK]');
+    yield put(addMark(mark));
+  }
+}
+
 export function* markSagas() {
   yield all([
-    takeLatest(MARK.CAPTURE, handleCapturePhoto),
+    takeEvery(MARK.CAPTURE, handleCapturePhoto),
+    takeEvery(MARK.RECEIVE, handleMarkReceive),
   ]);
 }

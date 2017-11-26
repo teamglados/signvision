@@ -12,13 +12,13 @@ export default () => store => {
 
   // Subscribe to messages
   messages.subscribe(evt => {
-    store.dispatch({ ...evt, server: true });
+    // store.dispatch({ ...evt, server: true });
   });
 
   // Test
-  setInterval(() => {
-    client.send({ type: 'client_event', payload: 'test' });
-  }, 2000);
+  // setInterval(() => {
+  //   client.send({ type: 'client_event', payload: 'test' });
+  // }, 2000);
 
   return next => action => {
     if (!action.server) {
