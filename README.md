@@ -1,4 +1,4 @@
-# Glados
-Team Glados Junction 2017 hackathon entry
+# Signvision
+Junction 2017 hackathon entry
 
-**Trello**: https://trello.com/b/7SsOZFrI/glados-junction-17
+https://vimeo.com/244507554
