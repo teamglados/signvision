@@ -17,15 +17,6 @@ export default class App extends Component {
     isAndroidPermissionGranted: false,
   }
 
-  async componentWillMount() {
-    if (IS_ANDROID) {
-      const isGranted = await Mapbox.requestAndroidLocationPermissions();
-      this.setState({
-        isAndroidPermissionGranted: isGranted,
-        isFetchingAndroidPermission: false,
-      });
-    }
-    Mapbox.setAccessToken(MAP_BOX_TOKEN);
   }
 
   render() {
