@@ -10,11 +10,6 @@ import RootScreen from './root.screen';
 import { IS_ANDROID, MAP_BOX_TOKEN } from './config';
 
 const store = configureStore();
-
-export default class App extends Component {
-  state = {
-    isFetchingAndroidPermission: IS_ANDROID,
-    isAndroidPermissionGranted: false,
   }
 
   }
